@@ -91,7 +91,7 @@ type book struct {
 	Issue  time.Time
 }
 
-func postBooks(c *gin.Context) {
+func postBook(c *gin.Context) {
 	var newBook book
 
 	if err := c.BindJSON(&newBook); err != nil {
@@ -150,7 +150,6 @@ func getReaderBooks(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
 		return
 	}
-
 	person_name := input.Name
 
 	for _, reader := range readers {
@@ -159,8 +158,9 @@ func getReaderBooks(c *gin.Context) {
 			var badbooks []booksInUse
 
 			for _, rentedbook := range reader.booksInUse {
-				if time.Since(rentedbook.DateOfRent) >= 14*24*time.Hour {
+				if time.Since(rentedbook.DateOfRent) <= 14*24*time.Hour {
 					okbooks = append(okbooks, rentedbook)
+
 				} else {
 					badbooks = append(badbooks, rentedbook)
 				}
@@ -173,7 +173,6 @@ func getReaderBooks(c *gin.Context) {
 			return
 		}
 	}
-
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Reader not found"})
 }
 
@@ -207,18 +206,19 @@ func rentBookByTitle(c *gin.Context) {
 		return
 	}
 
-	for _, reader := range readers {
+	for id, reader := range readers {
 		if reader.Name == client_name {
 			if len(reader.booksInUse) >= 3 {
 				c.IndentedJSON(http.StatusNotFound, gin.H{"message": "You have too much books RN"})
 				return
 			}
-			var newRent = booksInUse{books[book_id], time.Now()}
 
 			books[book_id].Copies--
-			reader.booksInUse = append(reader.booksInUse, newRent)
+			var newRent = booksInUse{books[book_id], time.Now()}
+
+			readers[id].booksInUse = append(readers[id].booksInUse, newRent)
 			c.IndentedJSON(http.StatusOK, gin.H{
-				"reader": reader, "booksInUse": reader.booksInUse,
+				"reader": readers[id], "booksInUse": readers[id].booksInUse,
 			})
 			return
 		}
@@ -253,10 +253,9 @@ func returnBookByTitle(c *gin.Context) {
 		return
 	}
 
-	for _, reader := range readers {
+	for id, reader := range readers {
 		if reader.Name == client_name {
 
-			books[book_id].Copies++
 			book_id := -1
 
 			for id, book := range reader.booksInUse {
@@ -269,9 +268,11 @@ func returnBookByTitle(c *gin.Context) {
 				c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book is not rented by you"})
 				return
 			}
-			reader.booksInUse = append(reader.booksInUse[:book_id], reader.booksInUse[book_id+1:]...)
+
+			books[book_id].Copies++
+			readers[id].booksInUse = append(readers[id].booksInUse[:book_id], readers[id].booksInUse[book_id+1:]...)
 			c.IndentedJSON(http.StatusOK, gin.H{
-				"reader": reader, "booksInUse": reader.booksInUse,
+				"reader": readers[id], "booksInUse": readers[id].booksInUse,
 			})
 			return
 		}
@@ -284,17 +285,30 @@ func getReaders(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, readers)
 }
 
+func postReader(c *gin.Context) {
+	var newReader book
+
+	if err := c.BindJSON(&newReader); err != nil {
+		return
+	}
+
+	books = append(books, newReader)
+	c.IndentedJSON(http.StatusCreated, newReader)
+}
+
 func newYear(year int) time.Time {
 	return time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
 }
 
 func main() {
 	router := gin.Default()
-	router.GET("/books", getBooks)
 	router.GET("/readers", getReaders)
-	router.GET("/book/:Title", getBookByTitle)
+	router.POST("/reader", postReader)
 	router.GET("/reader/books", getReaderBooks)
-	router.POST("/books", postBooks)
+
+	router.GET("/books", getBooks)
+	router.POST("/book", postBook)
+	router.GET("/book/:Title", getBookByTitle)
 	router.PATCH("/book/rent", rentBookByTitle)
 	router.PATCH("/book/return", returnBookByTitle)
 
