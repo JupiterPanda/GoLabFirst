@@ -17,6 +17,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const timeToExpire = 14 * 24 * time.Hour
+
 var books = []book{
 	{"Война и мир", 5, "Лев Толстой", newYear(1869)},
 	{"Преступление и наказание", 3, "Федор Достоевский", newYear(1866)},
@@ -95,6 +97,7 @@ func postBook(c *gin.Context) {
 	var newBook book
 
 	if err := c.BindJSON(&newBook); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
 		return
 	}
 
@@ -118,17 +121,6 @@ func getBookByTitle(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found"})
 }
 
-// type reader struct {
-// 	Name        string
-// 	PhoneNumber string
-// 	Adress      string
-// 	DateOfBirth time.Time
-// 	booksInUse   []struct {
-// 		NameOfBook book		// можно ещё запихнуть сюда ссылку на объект книги, а не новый объект
-// 		DateOfRent time.Time
-// 	}
-// }
-
 type reader struct {
 	Name        string
 	PhoneNumber string
@@ -150,15 +142,15 @@ func getReaderBooks(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
 		return
 	}
-	person_name := input.Name
+	readerName := input.Name
 
-	for _, reader := range readers {
-		if reader.Name == person_name {
+	for _, localReader := range readers {
+		if localReader.Name == readerName {
 			var okbooks []booksInUse
 			var badbooks []booksInUse
 
-			for _, rentedbook := range reader.booksInUse {
-				if time.Since(rentedbook.DateOfRent) <= 14*24*time.Hour {
+			for _, rentedbook := range localReader.booksInUse {
+				if time.Since(rentedbook.DateOfRent) <= timeToExpire {
 					okbooks = append(okbooks, rentedbook)
 
 				} else {
@@ -186,35 +178,35 @@ func rentBookByTitle(c *gin.Context) {
 		return
 	}
 
-	client_name := input.Name
-	book_name := input.Title
-	book_id := -1
+	readerName := input.Name
+	bookName := input.Title
+	bookID := -1
 
-	for id, book := range books {
-		if book.Title == book_name {
-			if book.Copies == 0 {
+	for id, localBook := range books {
+		if localBook.Title == bookName {
+			if localBook.Copies == 0 {
 				c.IndentedJSON(http.StatusNotFound, gin.H{"message": "All books are rented"})
 				return
 			}
-			book_id = id
+			bookID = id
 			break
 		}
 	}
 
-	if book_id == -1 {
+	if bookID == -1 {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found"})
 		return
 	}
 
-	for id, reader := range readers {
-		if reader.Name == client_name {
-			if len(reader.booksInUse) >= 3 {
+	for id, localReader := range readers {
+		if localReader.Name == readerName {
+			if len(localReader.booksInUse) >= 3 {
 				c.IndentedJSON(http.StatusNotFound, gin.H{"message": "You have too much books RN"})
 				return
 			}
 
-			books[book_id].Copies--
-			var newRent = booksInUse{books[book_id], time.Now()}
+			books[bookID].Copies--
+			var newRent = booksInUse{books[bookID], time.Now()}
 
 			readers[id].booksInUse = append(readers[id].booksInUse, newRent)
 			c.IndentedJSON(http.StatusOK, gin.H{
@@ -237,40 +229,40 @@ func returnBookByTitle(c *gin.Context) {
 		return
 	}
 
-	client_name := input.Name
-	book_name := input.Title
-	book_id := -1
+	readerName := input.Name
+	bookName := input.Title
+	bookID := -1
 
-	for id, book := range books {
-		if book.Title == book_name {
-			book_id = id
+	for id, localBook := range books {
+		if localBook.Title == bookName {
+			bookID = id
 			break
 		}
 	}
 
-	if book_id == -1 {
+	if bookID == -1 {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found"})
 		return
 	}
 
-	for id, reader := range readers {
-		if reader.Name == client_name {
+	for id, localReader := range readers {
+		if localReader.Name == readerName {
 
-			book_id := -1
+			bookID := -1
 
-			for id, book := range reader.booksInUse {
-				if book.NameOfBook.Title == book_name {
-					book_id = id
+			for id, book := range localReader.booksInUse {
+				if book.NameOfBook.Title == bookName {
+					bookID = id
 					break
 				}
 			}
-			if book_id == -1 {
+			if bookID == -1 {
 				c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book is not rented by you"})
 				return
 			}
 
-			books[book_id].Copies++
-			readers[id].booksInUse = append(readers[id].booksInUse[:book_id], readers[id].booksInUse[book_id+1:]...)
+			books[bookID].Copies++
+			readers[id].booksInUse = append(readers[id].booksInUse[:bookID], readers[id].booksInUse[bookID+1:]...)
 			c.IndentedJSON(http.StatusOK, gin.H{
 				"reader": readers[id], "booksInUse": readers[id].booksInUse,
 			})
