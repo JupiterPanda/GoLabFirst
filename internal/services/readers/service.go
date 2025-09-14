@@ -52,8 +52,7 @@ func (s *Service) GetReaderBooks(ctx context.Context, name string) ([]models.Boo
 	return okbooks, badbooks, nil
 }
 
-/*
-func (s *Service, r *Service) RentBookByTitle(ctx context.Context, name, title string) error {
+/*func (s *Service, r *Service) RentBookByTitle(ctx context.Context, name, title string) error {
 
 	bookId, err := GetByTitle(ctx, title)
 	if err != nil {
