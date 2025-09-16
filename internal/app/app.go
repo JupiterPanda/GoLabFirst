@@ -5,43 +5,35 @@ import (
 	"fmt"
 	"goproject/internal/package/migrator"
 	"log"
+	"os"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+const (
+	migrationsPath = "migrations" // Путь к папке с миграциями
 )
 
 // Run инициализирует подключение к базе, применяет миграции и запускает приложение
 func Run() {
-	ctx := context.Background() // контекст с отменой и таймаутом можно передать сюда
-
-	// URL подключения к базе PostgreSQL на localhost с параметром sslmode=disable
-	dbUrl := "postgresql://postgres:qwerty@localhost:5432/postgres?sslmode=disable"
-
-	// Обработка и разбор конфигурации подключения для pgxpool
-	poolConfig, err := pgxpool.ParseConfig(dbUrl)
-	if err != nil {
-		log.Printf("Unable to parse database config: %v", err) // Завершаем, если ошибка
-	}
-
-	poolConfig.MaxConns = 10 // Максимальное количество соединений в пуле
+	ctx := context.Background()
 
 	// Подключаемся к базе данных через пул соединений
-	dbpool, err := pgxpool.ConnectConfig(ctx, poolConfig)
+	pool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Printf("Unable to connect to database: %v", err) // Завершаем, если ошибка соединения
+		log.Printf("Unable to create connection pool: %v\n", err)
+		os.Exit(1)
 	}
-	defer dbpool.Close() // Закрываем пул соединений при выходе
-
-	// Путь к папке с миграциями
-	migrationsPath := "migrations"
+	defer pool.Close()
 
 	// Запускаем миграции
-	err = migrator.Migrate(ctx, dbpool, migrationsPath)
+	err = migrator.Migrate(ctx, pool, migrationsPath)
 	if err != nil {
 		log.Printf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
 
 	fmt.Println("DB migrated")
 
-	// Здесь можно инициализировать Gin и дальше работать с приложением через dbpool
+	// Здесь можно инициализировать Gin и дальше работать с приложением через pool
 	// ...
 }

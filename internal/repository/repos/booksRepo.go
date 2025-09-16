@@ -5,7 +5,7 @@ import (
 	"errors"
 	"goproject/internal/models"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // BookRepository реализует доступ к данным по книгам
