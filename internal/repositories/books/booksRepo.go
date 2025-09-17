@@ -1,4 +1,4 @@
-package repository
+package books
 
 import (
 	"context"
@@ -56,11 +56,11 @@ func (r *BookRepository) GetByTitle(ctx context.Context, title string) (*models.
 	return &book, nil
 }
 
-// GetByTitle ищет книгу по названию
+// CheckCopiesByID ищет книгу по названию
 func (r *BookRepository) CheckCopiesByID(ctx context.Context, id int) error {
 	// Найти книгу по названию с достаточным количеством копий
 	var copies int
-	err := r.db.QueryRow(ctx, "SELECT id, copies FROM book WHERE id=$1", id).Scan(&copies)
+	err := r.db.QueryRow(ctx, "SELECT id, copies FROM books WHERE id=$1", id).Scan(&copies)
 	if err != nil {
 		return errors.New("book not found")
 	}

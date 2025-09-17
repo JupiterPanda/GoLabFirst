@@ -2,6 +2,7 @@ package migrator
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -37,5 +38,7 @@ func Migrate(ctx context.Context, db *pgxpool.Pool, migrationsPath string) error
 			return err
 		}
 	}
+
+	fmt.Println("DB migrated")
 	return nil
 }

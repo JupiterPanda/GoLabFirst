@@ -1,4 +1,4 @@
-package repository
+package readers
 
 import (
 	"context"
@@ -14,20 +14,20 @@ type ReaderRepository struct {
 	db *pgxpool.Pool
 }
 
-// Конструктор для создания нового репозитория читателя
+// NewReaderRepository Конструктор для создания нового репозитория читателя
 func NewReaderRepository(db *pgxpool.Pool) *ReaderRepository {
 	return &ReaderRepository{db: db}
 }
 
 // Create добавляет нового читателя в базу
 func (r *ReaderRepository) Create(ctx context.Context, reader *models.Reader) error {
-	query := `INSERT INTO readers (name, number, address, dateofbirth) VALUES ($1, $2, $3, $4) RETURNING id`
+	query := `INSERT INTO readers (name, number, address, date_of_birth) VALUES ($1, $2, $3, $4) RETURNING id`
 	return r.db.QueryRow(ctx, query, reader.Name, reader.PhoneNumber, reader.Address, reader.DateOfBirth).Scan(&reader.ID)
 }
 
 // GetAll возвращает всех читателей из базы
 func (r *ReaderRepository) GetAll(ctx context.Context) ([]models.Reader, error) {
-	rows, err := r.db.Query(ctx, `SELECT id, name, number, address, dateofbirth FROM readers`)
+	rows, err := r.db.Query(ctx, `SELECT id, name, number, address, date_of_birth FROM readers`)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (r *ReaderRepository) GetAll(ctx context.Context) ([]models.Reader, error) 
 	return readers, nil
 }
 
-// Метод для получения ID читателя по имени (можно перенести в GetReaderBooksByID)
+// GetReaderIdByName Метод для получения ID читателя по имени (можно перенести в GetReaderBooksByID)
 func (r *ReaderRepository) GetReaderIdByName(ctx context.Context, name string) (int, error) {
 	var readerID int
 	err := r.db.QueryRow(ctx, "SELECT id FROM readers WHERE name = $1", name).Scan(&readerID)
@@ -55,13 +55,13 @@ func (r *ReaderRepository) GetReaderIdByName(ctx context.Context, name string) (
 	return readerID, nil
 }
 
-// Метод для получения книг по ID читателя
+// GetReaderBooksByID Метод для получения книг по ID читателя
 func (r *ReaderRepository) GetReaderBooksByID(ctx context.Context, readerID int) ([]models.BookInUse, error) {
 
 	// Получаем книги из связующей таблицы readerBooks с join к таблице book
 	query := `
-        SELECT b.id, b.title, b.author, b.issue, b.copies, rb.dateofrent
-        FROM readerBooks rb
+        SELECT b.id, b.title, b.author, b.issue, b.copies, rb.date_of_rent
+        FROM public.reader_books rb
         JOIN books b ON rb.book_id = b.id
         WHERE rb.reader_id = $1
     `
@@ -87,44 +87,44 @@ func (r *ReaderRepository) GetReaderBooksByID(ctx context.Context, readerID int)
 	return booksInUse, nil
 }
 
-// GetByTitle ищет книгу по названию
-func (r *BookRepository) CheckNumOfBooksOfReader(ctx context.Context, readerID int) error {
-	// Найти книгу по названию с достаточным количеством копий
-	var count int
-	err := r.db.QueryRow(ctx, "SELECT COUNT(*) FROM readerBook WHERE reader_id=$1", readerID).Scan(&count)
-	if err != nil {
-		return err
-	}
-	if count >= 3 {
-		return errors.New("too many books rented")
-	}
-	return nil
-}
+//// CheckNumOfBooksOfReader ищет книгу по названию
+//func (r *books.BookRepository) CheckNumOfBooksOfReader(ctx context.Context, readerID int) error {
+//	// Найти книгу по названию с достаточным количеством копий
+//	var count int
+//	err := r.db.QueryRow(ctx, "SELECT COUNT(*) FROM reader_books WHERE reader_id=$1", readerID).Scan(&count)
+//	if err != nil {
+//		return err
+//	}
+//	if count >= 3 {
+//		return errors.New("too many books rented")
+//	}
+//	return nil
+//}
 
-// Метод для аренды книги по ID читателя и книги
-func (r *ReaderRepository) RentBook(ctx context.Context, readerID, bookID int) error {
-
-	// Начинаем транзакцию
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-
-	// Уменьшаем количество доступных копий книги
-	_, err = tx.Exec(ctx, "UPDATE book SET copies = copies - 1 WHERE id = $1", bookID)
-	if err != nil {
-		return err
-	}
-
-	// Добавляем запись о аренде в связующую таблицу
-	_, err = tx.Exec(ctx,
-		"INSERT INTO readerBook (book_id, reader_id, dateofrent) VALUES ($1, $2, $3)",
-		bookID, readerID, time.Now())
-	if err != nil {
-		return err
-	}
-
-	// Коммитим транзакцию
-	return tx.Commit(ctx)
-}
+//// Метод для аренды книги по ID читателя и книги
+//func (r *ReaderRepository) RentBook(ctx context.Context, readerID, bookID int) error {
+//
+//	// Начинаем транзакцию
+//	tx, err := r.db.Begin(ctx)
+//	if err != nil {
+//		return err
+//	}
+//	defer tx.Rollback(ctx)
+//
+//	// Уменьшаем количество доступных копий книги
+//	_, err = tx.Exec(ctx, "UPDATE books SET copies = copies - 1 WHERE id = $1", bookID)
+//	if err != nil {
+//		return err
+//	}
+//
+//	// Добавляем запись о аренде в связующую таблицу
+//	_, err = tx.Exec(ctx,
+//		"INSERT INTO reader_books (book_id, reader_id, date_of_rent) VALUES ($1, $2, $3)",
+//		bookID, readerID, time.Now())
+//	if err != nil {
+//		return err
+//	}
+//
+//	// Коммитим транзакцию
+//	return tx.Commit(ctx)
+//}

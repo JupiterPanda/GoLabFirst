@@ -4,7 +4,7 @@ import (
 	"context"
 	"goproject/internal/models"
 	constants "goproject/internal/package"
-	repository "goproject/internal/repository/repos"
+	repository "goproject/internal/repositories/readers"
 	"log"
 	"time"
 )
@@ -13,22 +13,22 @@ type Service struct {
 	repo *repository.ReaderRepository
 }
 
-// Конструктор сервиса читателя
+// NewService Конструктор сервиса читателя
 func NewService(repo *repository.ReaderRepository) *Service {
 	return &Service{repo: repo}
 }
 
-// Получить все книги
+// GetAllReaders Получить все книги
 func (s *Service) GetAllReaders(ctx context.Context) ([]models.Reader, error) {
 	return s.repo.GetAll(ctx)
 }
 
-// Добавить читателя
+// CreateReader Добавить читателя
 func (s *Service) CreateReader(ctx context.Context, reader *models.Reader) error {
 	return s.repo.Create(ctx, reader)
 }
 
-// Получить все книги у пользователя
+// GetReaderBooks Получить все книги у пользователя
 func (s *Service) GetReaderBooks(ctx context.Context, name string) ([]models.BookInUse, []models.BookInUse, error) {
 	readerId, err := s.repo.GetReaderIdByName(ctx, name)
 	if err != nil {
@@ -40,16 +40,16 @@ func (s *Service) GetReaderBooks(ctx context.Context, name string) ([]models.Boo
 		log.Printf("unknown error")
 	}
 
-	var okbooks, badbooks []models.BookInUse
+	var okBooks, badBooks []models.BookInUse
 
 	for _, book := range booksInUse {
 		if time.Since(book.DateOfRent) <= constants.TimeToExpire {
-			okbooks = append(okbooks, book)
+			okBooks = append(okBooks, book)
 		} else {
-			badbooks = append(badbooks, book)
+			badBooks = append(badBooks, book)
 		}
 	}
-	return okbooks, badbooks, nil
+	return okBooks, badBooks, nil
 }
 
 /*func (s *Service, r *Service) RentBookByTitle(ctx context.Context, name, title string) error {
@@ -58,7 +58,7 @@ func (s *Service) GetReaderBooks(ctx context.Context, name string) ([]models.Boo
 	if err != nil {
 		log.Printf("book not found")
 	}
-	ok := repository.CheckCopiesByID(ctx, bookId)
+	ok := repositories.CheckCopiesByID(ctx, bookId)
 
 	readerId, err := s.repo.GetReaderIdByName(ctx, name)
 	if err != nil {

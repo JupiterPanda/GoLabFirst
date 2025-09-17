@@ -1,25 +1,28 @@
--- Таблица книг
+-- Создание таблиц по схемам
+
 CREATE TABLE IF NOT EXISTS books (
     ID SERIAL PRIMARY KEY,
-    Title VARCHAR(255) NOT NULL,
-    Author VARCHAR(255) NOT NULL,
-    Issue DATE NOT NULL,
-    Copies INT NOT NULL
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    issue DATE NOT NULL,
+    copies INT NOT NULL
 );
 
--- Таблица читателей
 CREATE TABLE IF NOT EXISTS readers (
     ID SERIAL PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Number VARCHAR(50) NOT NULL,
-    Address VARCHAR(255),
-    DateOfBirth DATE NOT NULL
+    name VARCHAR(255) NOT NULL,
+    number VARCHAR(50) NOT NULL,
+    address VARCHAR(255),
+    date_of_birth DATE NOT NULL
 );
 
--- Связующая таблица: книги в пользовании
-CREATE TABLE IF NOT EXISTS readerBooks (
-    Book_ID INT NOT NULL REFERENCES Book(ID) ON DELETE CASCADE,
-    Reader_ID INT NOT NULL REFERENCES Reader(ID),
-    DateOfRent DATE NOT NULL,
-    PRIMARY KEY (Book_ID, Reader_ID, DateOfRent)
+CREATE TABLE IF NOT EXISTS reader_books (
+    book_id INT NOT NULL REFERENCES books(ID) ON DELETE CASCADE,
+    reader_id INT NOT NULL REFERENCES readers(ID),
+    date_of_rent DATE NOT NULL,
+    PRIMARY KEY (book_id, reader_id)
 );
+
+-- Добавление уникальных индексов, если их еще нет
+CREATE UNIQUE INDEX IF NOT EXISTS unique_book_title ON books(title);
+CREATE UNIQUE INDEX IF NOT EXISTS unique_reader_number ON readers(number);
