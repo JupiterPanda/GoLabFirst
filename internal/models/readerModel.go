@@ -11,9 +11,3 @@ type Reader struct {
 	DateOfBirth time.Time   `json:"date_of_birth"` // Дата рождения
 	BooksInUse  []BookInUse `json:"books_in_use"`  // Книги, взятые в пользование
 }
-
-// BookInUse представляет книгу, взятую в аренду с датой
-type BookInUse struct {
-	NameOfBook Book      `json:"name_of_book"` // Книга
-	DateOfRent time.Time `json:"date_of_rent"` // Дата взятия
-}
