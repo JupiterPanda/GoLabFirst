@@ -14,8 +14,8 @@ type Repository struct {
 	db *pgxpool.Pool
 }
 
-// New создаёт новый репозиторий с пулом соединений к базе
-func New(db *pgxpool.Pool) *Repository {
+// NewRepo создаёт новый репозиторий с пулом соединений к базе
+func NewRepo(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
@@ -80,12 +80,12 @@ func (r *Repository) GetReadersIdsByBookId(ctx context.Context, bookId int) ([]i
 }
 
 // Delete удаляет из бд запись об аренде книги
-func (r *Repository) Delete(ctx context.Context, readerId int, bookId int, dateOfRent time.Time) error {
+func (r *Repository) Delete(ctx context.Context, readerId int, bookId int) error {
 	query := `
         DELETE FROM reader_books 
-        WHERE reader_id = $1 AND book_id = $2 AND date_of_rent = $3
+        WHERE reader_id = $1 AND book_id = $2
     `
-	cmdTag, err := r.db.Exec(ctx, query, readerId, bookId, dateOfRent)
+	cmdTag, err := r.db.Exec(ctx, query, readerId, bookId)
 	if err != nil {
 		return err
 	}

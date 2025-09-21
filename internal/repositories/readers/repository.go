@@ -14,8 +14,8 @@ type Repository struct {
 	db *pgxpool.Pool
 }
 
-// New Конструктор для создания нового репозитория читателя
-func New(db *pgxpool.Pool) *Repository {
+// NewRepo Конструктор для создания нового репозитория читателя
+func NewRepo(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 

@@ -14,8 +14,8 @@ type Repository struct {
 	db *pgxpool.Pool
 }
 
-// New создаёт новый репозиторий с пулом соединений к базе
-func New(db *pgxpool.Pool) *Repository {
+// NewRepo создаёт новый репозиторий с пулом соединений к базе
+func NewRepo(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
@@ -57,11 +57,25 @@ func (r *Repository) GetByTitle(ctx context.Context, title string) (*models.Book
 	return &book, nil
 }
 
-// CheckCopiesByID ищет книгу по названию
+// CheckCopiesByID проверяет кол-во книг в наличии по ID
 func (r *Repository) CheckCopiesByID(ctx context.Context, id int) error {
 	// Найти книгу по названию с достаточным количеством копий
 	var copies int
 	err := r.db.QueryRow(ctx, "SELECT id, copies FROM books WHERE id=$1", id).Scan(&copies)
+	if err != nil {
+		return errors.New("book not found")
+	}
+	if copies <= 0 {
+		return errors.New("this book are out of stock")
+	}
+	return nil
+}
+
+// CheckCopies проверяет кол-во книг в наличии (if nil then copies > 0)
+func (r *Repository) CheckCopies(ctx context.Context, book *models.Book) error {
+	// Найти книгу по названию с достаточным количеством копий
+	var copies int
+	err := r.db.QueryRow(ctx, "SELECT id, copies FROM books WHERE id=$1", book.ID).Scan(&copies)
 	if err != nil {
 		return errors.New("book not found")
 	}

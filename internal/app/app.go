@@ -2,11 +2,19 @@ package app
 
 import (
 	"context"
+	//handlers "goproject/internal/handler/handler"
 	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
+	booksRepoPackage "goproject/internal/repositories/books"
+	booksInUseRepoPackage "goproject/internal/repositories/booksinuse"
+	readersRepoPackage "goproject/internal/repositories/readers"
+	booksServicePackage "goproject/internal/services/books"
+	booksInUseServicePackage "goproject/internal/services/booksinuse"
+	readersServicePackage "goproject/internal/services/readers"
 	"log"
 	"os"
 
+	//"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -35,6 +43,24 @@ func Run() {
 		log.Printf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
 
-	// Здесь можно инициализировать Gin и дальше работать с приложением через pool
-	// ...
+	// Репозитории
+	bookRepo := booksRepoPackage.NewRepo(pool)
+	readerRepo := readersRepoPackage.NewRepo(pool)
+	bookInUseRepo := booksInUseRepoPackage.NewRepo(pool)
+
+	// Сервисы
+	bookService := booksServicePackage.NewService(bookRepo)
+	readerService := readersServicePackage.NewService(readerRepo)
+	bookInUseService := booksInUseServicePackage.NewService(bookInUseRepo)
+
+	// Хендлеры
+	//bookHandler := handlers.NewBookHandler(bookService)
+	//readerHandler := handlers.NewReaderHandler(readerService)
+	//bookInUseHandler := handlers.NewBookInUseHandler(bookInUseService)
+
+	// Роутер и маршруты
+	//router := gin.Default()
+	// router.GET()/POST() и т.д. — регистрация хендлеров
+
+	//router.Run()
 }

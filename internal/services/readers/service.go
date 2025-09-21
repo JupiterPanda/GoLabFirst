@@ -10,11 +10,11 @@ import (
 )
 
 type Service struct {
-	repo *repository.ReaderRepository
+	repo *repository.Repository
 }
 
 // NewService Конструктор сервиса читателя
-func NewService(repo *repository.ReaderRepository) *Service {
+func NewService(repo *repository.Repository) *Service {
 	return &Service{repo: repo}
 }
 
