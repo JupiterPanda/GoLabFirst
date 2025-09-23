@@ -5,12 +5,13 @@ import (
 	//handlers "goproject/internal/handler/handler"
 	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
-	booksRepoPackage "goproject/internal/repositories/books"
-	booksInUseRepoPackage "goproject/internal/repositories/booksinuse"
-	readersRepoPackage "goproject/internal/repositories/readers"
-	booksServicePackage "goproject/internal/services/books"
-	booksInUseServicePackage "goproject/internal/services/booksinuse"
-	readersServicePackage "goproject/internal/services/readers"
+
+	// booksRepoPackage "goproject/internal/repositories/books"
+	// booksInUseRepoPackage "goproject/internal/repositories/booksinuse"
+	// readersRepoPackage "goproject/internal/repositories/readers"
+	// booksServicePackage "goproject/internal/services/books"
+	// booksInUseServicePackage "goproject/internal/services/booksinuse"
+	// readersServicePackage "goproject/internal/services/readers"
 	"log"
 	"os"
 
@@ -42,21 +43,21 @@ func Run() {
 	if err != nil {
 		log.Printf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
+	/*
+		// Репозитории
+		bookRepo := booksRepoPackage.NewRepo(pool)
+		readerRepo := readersRepoPackage.NewRepo(pool)
+		bookInUseRepo := booksInUseRepoPackage.NewRepo(pool)
 
-	// Репозитории
-	bookRepo := booksRepoPackage.NewRepo(pool)
-	readerRepo := readersRepoPackage.NewRepo(pool)
-	bookInUseRepo := booksInUseRepoPackage.NewRepo(pool)
+		// Сервисы
+		bookService := booksServicePackage.NewService(bookRepo)
+		readerService := readersServicePackage.NewService(readerRepo)
+		bookInUseService := booksInUseServicePackage.NewService(bookInUseRepo)
 
-	// Сервисы
-	bookService := booksServicePackage.NewService(bookRepo)
-	readerService := readersServicePackage.NewService(readerRepo)
-	bookInUseService := booksInUseServicePackage.NewService(bookInUseRepo)
-
-	// Хендлеры
-	//bookHandler := handlers.NewBookHandler(bookService)
-	//readerHandler := handlers.NewReaderHandler(readerService)
-	//bookInUseHandler := handlers.NewBookInUseHandler(bookInUseService)
+		// Хендлеры
+		bookHandler := handlers.NewBookHandler(bookService)
+		readerHandler := handlers.NewReaderHandler(readerService)
+		bookInUseHandler := handlers.NewBookInUseHandler(bookInUseService) */
 
 	// Роутер и маршруты
 	//router := gin.Default()

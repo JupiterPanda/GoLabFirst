@@ -1,14 +1,26 @@
 package books
 
 import (
-	repository "goproject/internal/repositories/books"
+	"context"
+	"goproject/internal/models"
 )
 
 type Service struct {
-	repo *repository.Repository
+	repo booksRepo
+}
+
+type booksRepo interface {
+	GetByTitle(ctx context.Context, title string) (*models.Book, error)
+	GetAll(ctx context.Context) ([]models.Book, error)
+	CheckCopiesByID(ctx context.Context, id int) error
+	CheckCopies(ctx context.Context, book *models.Book) error
+	Delete(ctx context.Context, book *models.Book) error
+	PlusCopyById(ctx context.Context, book *models.Book) error
+	MinusCopyById(ctx context.Context, book *models.Book) error
+	Create(ctx context.Context, book *models.Book) error
 }
 
 // NewService Конструктор сервиса книги
-func NewService(repo *repository.Repository) *Service {
+func NewService(repo booksRepo) *Service {
 	return &Service{repo: repo}
 }

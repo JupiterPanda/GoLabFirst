@@ -3,10 +3,7 @@ package readers
 import (
 	"context"
 	"goproject/internal/models"
-	constants "goproject/internal/package"
 	repository "goproject/internal/repositories/readers"
-	"log"
-	"time"
 )
 
 type Service struct {
@@ -19,17 +16,32 @@ func NewService(repo *repository.Repository) *Service {
 }
 
 // GetAllReaders Получить все книги
-func (s *Service) GetAllReaders(ctx context.Context) ([]models.Reader, error) {
+func (s *Service) GetAll(ctx context.Context) ([]models.Reader, error) {
 	return s.repo.GetAll(ctx)
 }
 
 // CreateReader Добавить читателя
-func (s *Service) CreateReader(ctx context.Context, reader *models.Reader) error {
+func (s *Service) Create(ctx context.Context, reader *models.Reader) error {
 	return s.repo.Create(ctx, reader)
 }
 
+// GetIdByName Метод для получения ID читателя по имени
+func (s *Service) GetIdByName(ctx context.Context, name string) (int, error) {
+	return s.repo.GetIdByName(ctx, name)
+}
+
+// Delete уладить читателя из readers
+func (s *Service) Delete(ctx context.Context, readerId int) error {
+	return s.repo.Delete(ctx, readerId)
+}
+
+// UpdateContactInfo обновит значения номера телефона или адреса
+func (s *Service) UpdateContactInfo(ctx context.Context, readerId int, phoneNumber string, address string) error {
+	return s.repo.UpdateContactInfo(ctx, readerId, phoneNumber, address)
+}
+
 // GetReaderBooks Получить все книги у пользователя
-func (s *Service) GetReaderBooks(ctx context.Context, name string) ([]models.BookInUse, []models.BookInUse, error) {
+/* func (s *Service) GetReaderBooks(ctx context.Context, name string) ([]models.BookInUse, []models.BookInUse, error) {
 	readerId, err := s.repo.GetReaderIdByName(ctx, name)
 	if err != nil {
 		log.Printf("reader not found")
@@ -50,7 +62,7 @@ func (s *Service) GetReaderBooks(ctx context.Context, name string) ([]models.Boo
 		}
 	}
 	return okBooks, badBooks, nil
-}
+} */
 
 /*func (s *Service, r *Service) RentBookByTitle(ctx context.Context, name, title string) error {
 
