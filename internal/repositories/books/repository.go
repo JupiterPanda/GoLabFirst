@@ -57,6 +57,28 @@ func (r *Repository) GetByTitle(ctx context.Context, title string) (*models.Book
 	return &book, nil
 }
 
+// GetIdByTitle ищет ID книги по названию
+func (r *Repository) GetIdByTitle(ctx context.Context, title string) (int, error) {
+	var id int
+	query := `SELECT id, title, author, issue, copies FROM books WHERE title=$1`
+	err := r.db.QueryRow(ctx, query, title).Scan(&id)
+	if err != nil {
+		return 0, errors.New("book not found")
+	}
+	return id, nil
+}
+
+// GetByID ищет книгу по ID
+func (r *Repository) GetByID(ctx context.Context, id int) (*models.Book, error) {
+	var book models.Book
+	query := `SELECT id, title, author, issue, copies FROM books WHERE title=$1`
+	err := r.db.QueryRow(ctx, query, id).Scan(&book.ID, &book.Title, &book.Author, &book.Issue, &book.Copies)
+	if err != nil {
+		return nil, errors.New("book not found")
+	}
+	return &book, nil
+}
+
 // CheckCopiesByID проверяет кол-во книг в наличии по ID
 func (r *Repository) CheckCopiesByID(ctx context.Context, id int) error {
 	// Найти книгу по названию с достаточным количеством копий
@@ -115,14 +137,14 @@ func (r *Repository) PlusCopyById(ctx context.Context, book *models.Book) error 
 }
 
 // MinusCopyById убавляет кол-во свободных копий книги
-func (r *Repository) MinusCopyById(ctx context.Context, book *models.Book) error {
+func (r *Repository) MinusCopyById(ctx context.Context, id int) error {
 	query := `UPDATE books SET copies = copies - 1 WHERE id = $1 AND copies > 0`
-	cmdTag, err := r.db.Exec(ctx, query, book.ID)
+	cmdTag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
 		return err
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("book with id %d not found or no available copies", book.ID)
+		return fmt.Errorf("book with id %d not found or no available copies", id)
 	}
 	return nil
 }

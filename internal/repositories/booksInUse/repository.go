@@ -94,3 +94,24 @@ func (r *Repository) Delete(ctx context.Context, readerId int, bookId int) error
 	}
 	return nil
 }
+
+// GetBooksInUseByReaderId возвращает мап со значениями id книги: дата аренды
+func (r *Repository) GetBooksInUseByReaderId(ctx context.Context, readerId int) (map[int]time.Time, error) {
+	rows, err := r.db.Query(ctx, `SELECT book_id, reader_id, date_of_rent FROM reader_books WHERE reader_id=$1`, readerId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var books map[int]time.Time
+	var rentTime time.Time
+	for rows.Next() {
+		var book int
+		err = rows.Scan(&book, &rentTime)
+		if err != nil {
+			return nil, err
+		}
+		books[book] = rentTime
+	}
+	return books, nil
+}

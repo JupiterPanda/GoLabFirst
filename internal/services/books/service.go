@@ -18,6 +18,8 @@ type booksRepo interface {
 	PlusCopyById(ctx context.Context, book *models.Book) error
 	MinusCopyById(ctx context.Context, book *models.Book) error
 	Create(ctx context.Context, book *models.Book) error
+	GetByID(ctx context.Context, id int) (*models.Book, error)
+	GetIdByTitle(ctx context.Context, title string) (int, error)
 }
 
 // NewService Конструктор сервиса книги
