@@ -2,16 +2,18 @@ package app
 
 import (
 	"context"
-	//handlers "goproject/internal/handler/handler"
+	"fmt"
+
+	"goproject/internal/handlers"
 	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
-
-	// booksRepoPackage "goproject/internal/repositories/books"
-	// booksInUseRepoPackage "goproject/internal/repositories/booksinuse"
-	// readersRepoPackage "goproject/internal/repositories/readers"
-	// booksServicePackage "goproject/internal/services/books"
-	// booksInUseServicePackage "goproject/internal/services/booksinuse"
-	// readersServicePackage "goproject/internal/services/readers"
+	booksRepoPackage "goproject/internal/repositories/books"
+	booksInUseRepoPackage "goproject/internal/repositories/booksinuse"
+	readersRepoPackage "goproject/internal/repositories/readers"
+	booksServicePackage "goproject/internal/services/books"
+	booksInUseServicePackage "goproject/internal/services/booksinuse"
+	readersServicePackage "goproject/internal/services/readers"
+	"goproject/internal/usecases"
 	"log"
 	"os"
 
@@ -43,25 +45,23 @@ func Run() {
 	if err != nil {
 		log.Printf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
-	/*
-		// Репозитории
-		bookRepo := booksRepoPackage.NewRepo(pool)
-		readerRepo := readersRepoPackage.NewRepo(pool)
-		bookInUseRepo := booksInUseRepoPackage.NewRepo(pool)
 
-		// Сервисы
-		bookService := booksServicePackage.NewService(bookRepo)
-		readerService := readersServicePackage.NewService(readerRepo)
-		bookInUseService := booksInUseServicePackage.NewService(bookInUseRepo)
+	// Репозитории
+	bookRepo := booksRepoPackage.NewRepo(pool)
+	readerRepo := readersRepoPackage.NewRepo(pool)
+	bookInUseRepo := booksInUseRepoPackage.NewRepo(pool)
 
-		// Хендлеры
-		bookHandler := handlers.NewBookHandler(bookService)
-		readerHandler := handlers.NewReaderHandler(readerService)
-		bookInUseHandler := handlers.NewBookInUseHandler(bookInUseService) */
+	// Сервисы
+	bookService := booksServicePackage.NewService(bookRepo)
+	readerService := readersServicePackage.NewService(readerRepo)
+	bookInUseService := booksInUseServicePackage.NewService(bookInUseRepo)
 
+	useCase := usecases.NewUseCase(bookService, readerService, bookInUseService)
+	handler := handlers.NewHandler(useCase)
+
+	fmt.Println("Все типы проинициализированы", handler)
 	// Роутер и маршруты
 	//router := gin.Default()
-	// router.GET()/POST() и т.д. — регистрация хендлеров
-
+	// router.GET()/POST() и т.д. — регистрация
 	//router.Run()
 }

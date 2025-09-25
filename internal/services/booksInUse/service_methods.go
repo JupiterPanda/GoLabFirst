@@ -3,6 +3,7 @@ package bookinuse
 import (
 	"context"
 	"goproject/internal/models"
+	"time"
 )
 
 // Create добавляет в бд запись о новой книге у читателя
@@ -23,6 +24,11 @@ func (s *Service) CountByReaderId(ctx context.Context, readerId int) (int, error
 // GetReadersIdsByBookId ищет клиентов, взявших книгу по ID книги
 func (s *Service) GetReadersIdsByBookId(ctx context.Context, bookId int) ([]int, error) {
 	return s.repo.GetReadersIdsByBookId(ctx, bookId)
+}
+
+// GetBooksInUseByReaderId ищет клиентов, взявших книгу по ID книги
+func (s *Service) GetBooksInUseByReaderId(ctx context.Context, readerId int) (map[int]time.Time, error) {
+	return s.repo.GetBooksInUseByReaderId(ctx, readerId)
 }
 
 // Delete удаляет из бд запись об аренде книги

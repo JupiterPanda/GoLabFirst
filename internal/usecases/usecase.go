@@ -15,14 +15,14 @@ type UseCase struct {
 type bookService interface {
 	GetByTitle(ctx context.Context, title string) (*models.Book, error)
 	GetAll(ctx context.Context) ([]models.Book, error)
-	CheckCopiesByID(ctx context.Context, id int) error
-	CheckCopies(ctx context.Context, book *models.Book) error
-	Delete(ctx context.Context, book *models.Book) error
-	PlusCopyById(ctx context.Context, book *models.Book) error
-	MinusCopyById(ctx context.Context, id int) error //тут был косяк
-	Create(ctx context.Context, book *models.Book) error
 	GetByID(ctx context.Context, id int) (*models.Book, error)
 	GetIdByTitle(ctx context.Context, title string) (int, error)
+	CheckCopiesByID(ctx context.Context, id int) error
+	CheckCopies(ctx context.Context, book *models.Book) error
+	Create(ctx context.Context, book *models.Book) error
+	Delete(ctx context.Context, book *models.Book) error
+	PlusCopyById(ctx context.Context, id int) error
+	MinusCopyById(ctx context.Context, id int) error
 }
 
 type readerService interface {
@@ -35,13 +35,13 @@ type readerService interface {
 
 type bookInUseService interface {
 	Create(ctx context.Context, bookInUse *models.BookInUse, readerId int) error
-	GetAll(ctx context.Context) ([]models.BookInUse, error)
-	CountByReaderId(ctx context.Context, readerId int) (int, error)
-	GetReadersIdsByBookId(ctx context.Context, bookId int) ([]int, error)
 	Delete(ctx context.Context, readerId int, bookId int) error
+	GetAll(ctx context.Context) ([]models.BookInUse, error)
+	GetReadersIdsByBookId(ctx context.Context, bookId int) ([]int, error)
 	GetBooksInUseByReaderId(ctx context.Context, readerId int) (map[int]time.Time, error)
+	CountByReaderId(ctx context.Context, readerId int) (int, error)
 }
 
-func New(bookService bookService, readerService readerService, bookInUseService bookInUseService) *UseCase {
+func NewUseCase(bookService bookService, readerService readerService, bookInUseService bookInUseService) *UseCase {
 	return &UseCase{bookService, readerService, bookInUseService}
 }

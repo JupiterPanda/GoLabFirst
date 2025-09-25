@@ -15,8 +15,8 @@ type booksRepo interface {
 	CheckCopiesByID(ctx context.Context, id int) error
 	CheckCopies(ctx context.Context, book *models.Book) error
 	Delete(ctx context.Context, book *models.Book) error
-	PlusCopyById(ctx context.Context, book *models.Book) error
-	MinusCopyById(ctx context.Context, book *models.Book) error
+	PlusCopyById(ctx context.Context, id int) error
+	MinusCopyById(ctx context.Context, id int) error
 	Create(ctx context.Context, book *models.Book) error
 	GetByID(ctx context.Context, id int) (*models.Book, error)
 	GetIdByTitle(ctx context.Context, title string) (int, error)

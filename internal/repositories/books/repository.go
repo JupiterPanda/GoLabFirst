@@ -124,14 +124,14 @@ func (r *Repository) Delete(ctx context.Context, book *models.Book) error {
 }
 
 // PlusCopyById прибавляет кол-во свободных копий книге
-func (r *Repository) PlusCopyById(ctx context.Context, book *models.Book) error {
+func (r *Repository) PlusCopyById(ctx context.Context, id int) error {
 	query := `UPDATE books SET copies = copies + 1 WHERE id = $1`
-	cmdTag, err := r.db.Exec(ctx, query, book.ID)
+	cmdTag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
 		return err
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("book with id %d not found", book.ID)
+		return fmt.Errorf("book with id %d not found", id)
 	}
 	return nil
 }
