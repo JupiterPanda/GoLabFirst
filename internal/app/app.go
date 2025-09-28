@@ -68,7 +68,7 @@ func Run() {
 	// router.POST("/reader", postReader)
 	router.GET("/books", handler.GetAllBooks)
 	// router.POST("/book", postBook)
-	// router.GET("/book/:Title", getBookByTitle)
+	// router.GET("/book", getBookByTitle)
 	router.GET("/reader/books", handler.GetReaderBooksSepGoodAndBad)
 	router.PATCH("/rent", handler.RentBookByTitleAndReaderName)
 	router.PATCH("/return", handler.ReturnBookByTitleAndReaderName)
@@ -100,5 +100,8 @@ func Run() {
 	PlusCopyById(ctx context.Context, id int) error
 	MinusCopyById(ctx context.Context, id int) error */
 
-	router.Run("localhost:8080")
+	err = router.Run("localhost:8080")
+	if err != nil {
+		return
+	}
 }

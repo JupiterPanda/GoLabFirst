@@ -2,12 +2,16 @@ package bookinuse
 
 import (
 	"context"
+	"fmt"
 	"goproject/internal/models"
 	"time"
 )
 
 // Create добавляет в бд запись о новой книге у читателя
 func (s *Service) Create(ctx context.Context, bookInUse *models.BookInUse, readerId int) error {
+	if bookInUse == nil {
+		return fmt.Errorf("[service][Create] некорректные данные для аренды")
+	}
 	return s.repo.Create(ctx, bookInUse, readerId)
 }
 
