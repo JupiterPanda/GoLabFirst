@@ -14,19 +14,20 @@ type ReaderRepository struct {
 	db *pgxpool.Pool
 }
 
+// Конструктор для создания нового репозитория читателя
 func NewReaderRepository(db *pgxpool.Pool) *ReaderRepository {
 	return &ReaderRepository{db: db}
 }
 
 // Create добавляет нового читателя в базу
 func (r *ReaderRepository) Create(ctx context.Context, reader *models.Reader) error {
-	query := `INSERT INTO reader (name, number, address, dateofbirth) VALUES ($1, $2, $3, $4) RETURNING id`
+	query := `INSERT INTO readers (name, number, address, dateofbirth) VALUES ($1, $2, $3, $4) RETURNING id`
 	return r.db.QueryRow(ctx, query, reader.Name, reader.PhoneNumber, reader.Address, reader.DateOfBirth).Scan(&reader.ID)
 }
 
 // GetAll возвращает всех читателей из базы
 func (r *ReaderRepository) GetAll(ctx context.Context) ([]models.Reader, error) {
-	rows, err := r.db.Query(ctx, `SELECT id, name, number, address, dateofbirth FROM reader`)
+	rows, err := r.db.Query(ctx, `SELECT id, name, number, address, dateofbirth FROM readers`)
 	if err != nil {
 		return nil, err
 	}
@@ -44,20 +45,24 @@ func (r *ReaderRepository) GetAll(ctx context.Context) ([]models.Reader, error) 
 	return readers, nil
 }
 
-// Метод для получения книг, взятых читателем по имени
-func (r *ReaderRepository) GetBooksInUseByName(ctx context.Context, name string) ([]models.BookInUse, error) {
-	// 1. Сначала находим ID читателя по имени
+// Метод для получения ID читателя по имени (можно перенести в GetReaderBooksByID)
+func (r *ReaderRepository) GetReaderIdByName(ctx context.Context, name string) (int, error) {
 	var readerID int
-	err := r.db.QueryRow(ctx, "SELECT id FROM reader WHERE name = $1", name).Scan(&readerID)
+	err := r.db.QueryRow(ctx, "SELECT id FROM readers WHERE name = $1", name).Scan(&readerID)
 	if err != nil {
-		return nil, errors.New("reader not found")
+		return 0, errors.New("reader not found")
 	}
+	return readerID, nil
+}
 
-	// 2. Получаем книги из связующей таблицы readerBook с join к таблице book
+// Метод для получения книг по ID читателя
+func (r *ReaderRepository) GetReaderBooksByID(ctx context.Context, readerID int) ([]models.BookInUse, error) {
+
+	// Получаем книги из связующей таблицы readerBooks с join к таблице book
 	query := `
         SELECT b.id, b.title, b.author, b.issue, b.copies, rb.dateofrent
-        FROM readerBook rb
-        JOIN book b ON rb.book_id = b.id
+        FROM readerBooks rb
+        JOIN books b ON rb.book_id = b.id
         WHERE rb.reader_id = $1
     `
 	rows, err := r.db.Query(ctx, query, readerID)
@@ -82,34 +87,22 @@ func (r *ReaderRepository) GetBooksInUseByName(ctx context.Context, name string)
 	return booksInUse, nil
 }
 
-// Метод для оформления аренды книги по имени читателя и названию книги
-func (r *ReaderRepository) RentBook(ctx context.Context, readerName, bookTitle string) error {
+// GetByTitle ищет книгу по названию
+func (r *BookRepository) CheckNumOfBooksOfReader(ctx context.Context, readerID int) error {
 	// Найти книгу по названию с достаточным количеством копий
-	var bookID, copies int
-	err := r.db.QueryRow(ctx, "SELECT id, copies FROM book WHERE title=$1", bookTitle).Scan(&bookID, &copies)
-	if err != nil {
-		return errors.New("book not found")
-	}
-	if copies <= 0 {
-		return errors.New("all books are rented")
-	}
-
-	// Найти читателя по имени
-	var readerID int
-	err = r.db.QueryRow(ctx, "SELECT id FROM reader WHERE name=$1", readerName).Scan(&readerID)
-	if err != nil {
-		return errors.New("reader not found")
-	}
-
-	// Проверить сколько книг сейчас взято читателем
 	var count int
-	err = r.db.QueryRow(ctx, "SELECT COUNT(*) FROM readerBook WHERE reader_id=$1", readerID).Scan(&count)
+	err := r.db.QueryRow(ctx, "SELECT COUNT(*) FROM readerBook WHERE reader_id=$1", readerID).Scan(&count)
 	if err != nil {
 		return err
 	}
 	if count >= 3 {
 		return errors.New("too many books rented")
 	}
+	return nil
+}
+
+// Метод для аренды книги по ID читателя и книги
+func (r *ReaderRepository) RentBook(ctx context.Context, readerID, bookID int) error {
 
 	// Начинаем транзакцию
 	tx, err := r.db.Begin(ctx)
