@@ -5,7 +5,7 @@ import (
 	"goproject/internal/services/readers"
 )
 
-type Handlers struct {
+type Handler struct {
 	bookService   books.Service
 	readerService readers.Service
 }
@@ -13,16 +13,9 @@ type Handlers struct {
 func NewHandlers(
 	bookService books.Service,
 	readerService readers.Service,
-) *Handlers {
-	return &Handlers{
+) *Handler {
+	return &Handler{
 		bookService:   bookService,
 		readerService: readerService,
 	}
 }
-
-// func (h *Handlers) Init(api *gin.RouterGroup) {
-//     v1 := api.Group("/v1")
-//     {
-//         h.initStudentsRoutes(v1)
-//     }
-// }
