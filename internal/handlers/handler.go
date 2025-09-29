@@ -36,7 +36,7 @@ type UseCase interface {
 	GetAllReaders(ctx context.Context) ([]models.Reader, error)
 	CreateReader(ctx context.Context, reader *models.Reader) error
 	GetReaderIdByName(ctx context.Context, name string) (int, error)
-	DeleteReader(ctx context.Context, readerId int) error
+	DeleteReader(ctx context.Context, reader *models.Reader) error
 	UpdateReaderContactInfo(ctx context.Context, readerId int, phoneNumber string, address string) error
 }
 

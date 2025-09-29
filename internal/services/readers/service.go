@@ -13,7 +13,7 @@ type readerRepo interface {
 	Create(ctx context.Context, reader *models.Reader) error
 	GetAll(ctx context.Context) ([]models.Reader, error)
 	GetIdByName(ctx context.Context, name string) (int, error)
-	Delete(ctx context.Context, readerId int) error
+	Delete(ctx context.Context, reader *models.Reader) error
 	UpdateContactInfo(ctx context.Context, readerId int, phoneNumber string, address string) error
 }
 

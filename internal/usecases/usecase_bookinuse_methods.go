@@ -6,17 +6,17 @@ import (
 	"time"
 )
 
-// Create добавляет в бд запись о новой книге у читателя
+// CreateBookInUse добавляет в бд запись о новой книге у читателя
 func (u *UseCase) CreateBookInUse(ctx context.Context, bookInUse *models.BookInUse, readerId int) error {
 	return u.bookInUseService.Create(ctx, bookInUse, readerId)
 }
 
-// GetAll возвращает все книги из базы
+// GetAllBooksInUse возвращает все книги из базы
 func (u *UseCase) GetAllBooksInUse(ctx context.Context) ([]models.BookInUse, error) {
 	return u.bookInUseService.GetAll(ctx)
 }
 
-// CountByReaderId ищет кол-во книг по ID клиента
+// CountBookInUseByReaderId ищет кол-во книг по ID клиента
 func (u *UseCase) CountBookInUseByReaderId(ctx context.Context, readerId int) (int, error) {
 	return u.bookInUseService.CountByReaderId(ctx, readerId)
 }
@@ -31,7 +31,7 @@ func (u *UseCase) GetBooksInUseByReaderId(ctx context.Context, readerId int) (ma
 	return u.bookInUseService.GetBooksInUseByReaderId(ctx, readerId)
 }
 
-// Delete удаляет из бд запись об аренде книги
+// DeleteBookInUse удаляет из бд запись об аренде книги
 func (u *UseCase) DeleteBookInUse(ctx context.Context, readerId int, bookId int) error {
 	return u.bookInUseService.Delete(ctx, readerId, bookId)
 }

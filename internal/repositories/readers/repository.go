@@ -67,9 +67,9 @@ func (r *Repository) GetIdByName(ctx context.Context, name string) (int, error) 
 	return readerID, nil
 }
 
-func (r *Repository) Delete(ctx context.Context, readerId int) error {
+func (r *Repository) Delete(ctx context.Context, reader *models.Reader) error {
 	query := `DELETE FROM readers WHERE id = $1`
-	cmdTag, err := r.db.Exec(ctx, query, readerId)
+	cmdTag, err := r.db.Exec(ctx, query, reader.ID)
 	if err != nil {
 		return fmt.Errorf("[repo][Delete] ошибка при запросе в БД: %w", err)
 	}

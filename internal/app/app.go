@@ -64,41 +64,40 @@ func Run() {
 
 	// Роутер и маршруты
 	router := gin.Default()
-	// router.GET("/readers", getReaders)
-	// router.POST("/reader", postReader)
-	router.GET("/books", handler.GetAllBooks)
-	// router.POST("/book", postBook)
-	// router.GET("/book", getBookByTitle)
+
+	// Чтение, аренда, возврат
 	router.GET("/reader/books", handler.GetReaderBooksSepGoodAndBad)
 	router.PATCH("/rent", handler.RentBookByTitleAndReaderName)
 	router.PATCH("/return", handler.ReturnBookByTitleAndReaderName)
 
-	/* TODO bookinuse routes
-	Create(ctx context.Context, bookInUse *models.BookInUse, readerId int) error
-	Delete(ctx context.Context, readerId int, bookId int) error
-	GetAll(ctx context.Context) ([]models.BookInUse, error)
-	GetReadersIdsByBookId(ctx context.Context, bookId int) ([]int, error)
-	GetBooksInUseByReaderId(ctx context.Context, readerId int) (map[int]time.Time, error)
-	CountByReaderId(ctx context.Context, readerId int) (int, error) */
+	// Книги CRUD
+	router.GET("/books", handler.GetAllBooks)
+	router.GET("/book/title", handler.GetBookByTitle)
+	router.GET("/book/id/title", handler.GetBookIdByTitle)
+	router.GET("/book/id", handler.GetBookByID)
+	router.POST("/book", handler.CreateBook)
+	router.DELETE("/book", handler.DeleteBook)
 
-	/* TODO reader routes
-	GetAll(ctx context.Context) ([]models.Reader, error)
-	Create(ctx context.Context, reader *models.Reader) error
-	GetIdByName(ctx context.Context, name string) (int, error)
-	Delete(ctx context.Context, readerId int) error
-	UpdateContactInfo(ctx context.Context, readerId int, phoneNumber string, address string) error */
+	// Копии книги
+	router.POST("/book/check/id", handler.CheckCopiesOfBookByID)
+	router.POST("/book/check", handler.CheckCopiesOfBook)
+	router.PATCH("/book/minus", handler.MinusCopyOfBookById)
+	router.PATCH("/book/plus", handler.PlusCopyOfBookById)
 
-	/* TODO book routes
-	GetByTitle(ctx context.Context, title string) (*models.Book, error)
-	GetAll(ctx context.Context) ([]models.Book, error)
-	GetByID(ctx context.Context, id int) (*models.Book, error)
-	GetIdByTitle(ctx context.Context, title string) (int, error)
-	CheckCopiesByID(ctx context.Context, id int) error
-	CheckCopies(ctx context.Context, book *models.Book) error
-	Create(ctx context.Context, book *models.Book) error
-	Delete(ctx context.Context, book *models.Book) error
-	PlusCopyById(ctx context.Context, id int) error
-	MinusCopyById(ctx context.Context, id int) error */
+	// Операции с InUse
+	router.POST("/reader/book", handler.CreateBookInUse)
+	router.GET("/reader/book", handler.GetAllBooksInUse)
+	router.GET("/reader/book/count", handler.CountBookInUseByReaderId)
+	router.GET("/reader/book/id", handler.GetBooksInUseByReaderId)
+	router.DELETE("/reader/book", handler.DeleteBookInUse)
+
+	// CRUD для читателей
+	router.GET("/readers", handler.GetAllReaders)
+	router.GET("/reader/id", handler.GetReaderIdByName)
+	router.POST("/reader", handler.CreateReader)
+	router.DELETE("/reader", handler.DeleteReader)
+	router.PATCH("/reader/contact", handler.UpdateReaderContactInfo)
+	router.GET("/reader/id/book", handler.GetReadersIdsByBookId)
 
 	err = router.Run("localhost:8080")
 	if err != nil {
