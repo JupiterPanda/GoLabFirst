@@ -2,13 +2,14 @@ package migrator
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// ctx - контекст для отмены и таймаутов операций
+// Migrate запускает поочередно файлы из директории migrationsPath
 func Migrate(ctx context.Context, db *pgxpool.Pool, migrationsPath string) error {
 	// Считываем список файлов в папке миграций
 	files, err := os.ReadDir(migrationsPath)
@@ -37,5 +38,7 @@ func Migrate(ctx context.Context, db *pgxpool.Pool, migrationsPath string) error
 			return err
 		}
 	}
+
+	fmt.Println("DB migrated")
 	return nil
 }

@@ -3,45 +3,104 @@ package app
 import (
 	"context"
 	"fmt"
-	"goproject/internal/package/migrator"
-	"log"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"goproject/internal/handlers"
+	constants "goproject/internal/package"
+	"goproject/internal/package/migrator"
+	booksRepoPackage "goproject/internal/repositories/books"
+	booksInUseRepoPackage "goproject/internal/repositories/booksinuse"
+	readersRepoPackage "goproject/internal/repositories/readers"
+	booksServicePackage "goproject/internal/services/books"
+	booksInUseServicePackage "goproject/internal/services/booksinuse"
+	readersServicePackage "goproject/internal/services/readers"
+	"goproject/internal/usecases"
+	"log"
+	"os"
+
+	//"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 // Run инициализирует подключение к базе, применяет миграции и запускает приложение
 func Run() {
-	ctx := context.Background() // контекст с отменой и таймаутом можно передать сюда
+	ctx := context.Background()
 
-	// URL подключения к базе PostgreSQL на localhost с параметром sslmode=disable
-	dbUrl := "postgresql://postgres:qwerty@localhost:5432/postgres?sslmode=disable"
-
-	// Обработка и разбор конфигурации подключения для pgxpool
-	poolConfig, err := pgxpool.ParseConfig(dbUrl)
+	err := godotenv.Load()
 	if err != nil {
-		log.Printf("Unable to parse database config: %v", err) // Завершаем, если ошибка
+		log.Fatal("Error loading .env file")
 	}
-
-	poolConfig.MaxConns = 10 // Максимальное количество соединений в пуле
 
 	// Подключаемся к базе данных через пул соединений
-	dbpool, err := pgxpool.ConnectConfig(ctx, poolConfig)
+	pool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Printf("Unable to connect to database: %v", err) // Завершаем, если ошибка соединения
+		log.Printf("Unable to create connection pool: %v\n", err)
+		os.Exit(1)
 	}
-	defer dbpool.Close() // Закрываем пул соединений при выходе
 
-	// Путь к папке с миграциями
-	migrationsPath := "migrations"
+	defer pool.Close()
 
 	// Запускаем миграции
-	err = migrator.Migrate(ctx, dbpool, migrationsPath)
+	err = migrator.Migrate(ctx, pool, constants.MigrationsPath)
 	if err != nil {
 		log.Printf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
 
-	fmt.Println("DB migrated")
+	// Репозитории
+	bookRepo := booksRepoPackage.NewRepo(pool)
+	readerRepo := readersRepoPackage.NewRepo(pool)
+	bookInUseRepo := booksInUseRepoPackage.NewRepo(pool)
 
-	// Здесь можно инициализировать Gin и дальше работать с приложением через dbpool
-	// ...
+	// Сервисы
+	bookService := booksServicePackage.NewService(bookRepo)
+	readerService := readersServicePackage.NewService(readerRepo)
+	bookInUseService := booksInUseServicePackage.NewService(bookInUseRepo)
+
+	useCase := usecases.NewUseCase(bookService, readerService, bookInUseService)
+	handler := handlers.NewHandler(useCase)
+
+	fmt.Println("Все типы проинициализированы", handler)
+
+	// Роутер и маршруты
+	router := gin.Default()
+
+	// Чтение, аренда, возврат
+	router.GET("/reader/books", handler.GetReaderBooksSepGoodAndBad)
+	router.PATCH("/rent", handler.RentBookByTitleAndReaderName)
+	router.PATCH("/return", handler.ReturnBookByTitleAndReaderName)
+
+	// Книги CRUD
+	router.GET("/books", handler.GetAllBooks)
+	router.GET("/book/title", handler.GetBookByTitle)
+	router.GET("/book/id/title", handler.GetBookIdByTitle)
+	router.GET("/book/id", handler.GetBookByID)
+	router.POST("/book", handler.CreateBook)
+	router.DELETE("/book", handler.DeleteBook)
+
+	// Копии книги
+	router.POST("/book/check/id", handler.CheckCopiesOfBookByID)
+	router.POST("/book/check", handler.CheckCopiesOfBook)
+	router.PATCH("/book/minus", handler.MinusCopyOfBookById)
+	router.PATCH("/book/plus", handler.PlusCopyOfBookById)
+
+	// Операции с InUse
+	router.POST("/reader/book", handler.CreateBookInUse)
+	router.GET("/reader/book", handler.GetAllBooksInUse)
+	router.GET("/reader/book/count", handler.CountBookInUseByReaderId)
+	router.GET("/reader/book/id", handler.GetBooksInUseByReaderId)
+	router.DELETE("/reader/book", handler.DeleteBookInUse)
+
+	// CRUD для читателей
+	router.GET("/readers", handler.GetAllReaders)
+	router.GET("/reader/id", handler.GetReaderIdByName)
+	router.POST("/reader", handler.CreateReader)
+	router.DELETE("/reader", handler.DeleteReader)
+	router.PATCH("/reader/contact", handler.UpdateReaderContactInfo)
+	router.GET("/reader/id/book", handler.GetReadersIdsByBookId)
+
+	err = router.Run("localhost:8080")
+	if err != nil {
+		return
+	}
 }

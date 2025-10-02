@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/internal/repositories/books/repository.go" value="2e2b9e0d-dccf-44ac-9bed-2aa85e46b98e" />
+    <file url="file://$PROJECT_DIR$/migrations/1_innit_database.up.sql" value="2e2b9e0d-dccf-44ac-9bed-2aa85e46b98e" />
+    <file url="file://$PROJECT_DIR$/migrations/2_seed_books.up.sql" value="2e2b9e0d-dccf-44ac-9bed-2aa85e46b98e" />
+    <file url="file://$PROJECT_DIR$/migrations/3_seed_readers.up.sql" value="2e2b9e0d-dccf-44ac-9bed-2aa85e46b98e" />
+    <file url="file://$PROJECT_DIR$/migrations/4_seed_readerbooks.up.sql" value="2e2b9e0d-dccf-44ac-9bed-2aa85e46b98e" />
+  </component>
+</project>
