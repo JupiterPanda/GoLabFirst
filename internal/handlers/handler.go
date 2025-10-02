@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"goproject/internal/models"
-	"time"
 )
 
 type Handler struct {
@@ -26,11 +25,11 @@ type UseCase interface {
 	MinusCopyOfBookById(ctx context.Context, id int) error
 	PlusCopyOfBookById(ctx context.Context, id int) error
 
-	CreateBookInUse(ctx context.Context, bookInUse *models.BookInUse, readerId int) error
+	CreateBookInUse(ctx context.Context, bookInUse *models.BookInUse, readerId int, bookId int) error
 	GetAllBooksInUse(ctx context.Context) ([]models.BookInUse, error)
 	CountBookInUseByReaderId(ctx context.Context, readerId int) (int, error)
 	GetReadersIdsByBookId(ctx context.Context, bookId int) ([]int, error)
-	GetBooksInUseByReaderId(ctx context.Context, readerId int) (map[int]time.Time, error)
+	GetBooksInUseByReaderId(ctx context.Context, readerId int) ([]models.BookInUse, error)
 	DeleteBookInUse(ctx context.Context, readerId int, bookId int) error
 
 	GetAllReaders(ctx context.Context) ([]models.Reader, error)

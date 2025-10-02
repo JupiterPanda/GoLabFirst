@@ -3,7 +3,6 @@ package handlers
 import (
 	"goproject/internal/models"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -224,21 +223,12 @@ func (h *Handler) CreateBookInUse(c *gin.Context) {
 		return
 	}
 	var bookInUse models.BookInUse
-	var err error
-	bookPtr, err := h.useCase.GetBookByID(c.Request.Context(), input.BookID)
+	err := h.useCase.CreateBookInUse(c.Request.Context(), &bookInUse, input.ReaderId, input.BookID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create book in use", "error": err.Error()})
 		return
 	}
-	bookInUse.BookInfo = *bookPtr
-	bookInUse.DateOfRent = time.Now()
-
-	err = h.useCase.CreateBookInUse(c.Request.Context(), &bookInUse, input.ReaderId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create book in use", "error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Book in use created"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Book in use created", "book": bookInUse})
 }
 
 func (h *Handler) GetAllBooksInUse(c *gin.Context) {
@@ -290,12 +280,12 @@ func (h *Handler) GetBooksInUseByReaderId(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	books, err := h.useCase.GetBooksInUseByReaderId(c.Request.Context(), input.ReaderId)
+	booksInUse, err := h.useCase.GetBooksInUseByReaderId(c.Request.Context(), input.ReaderId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to get books in use", "error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"books_in_use": books})
+	c.JSON(http.StatusOK, gin.H{"books_in_use": booksInUse})
 }
 
 func (h *Handler) DeleteBookInUse(c *gin.Context) {
