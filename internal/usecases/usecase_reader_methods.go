@@ -11,7 +11,7 @@ func (u *UseCase) GetAllReaders(ctx context.Context) ([]models.Reader, error) {
 }
 
 // CreateReader Добавить читателя
-func (u *UseCase) CreateReader(ctx context.Context, reader *models.Reader) error {
+func (u *UseCase) CreateReader(ctx context.Context, reader models.Reader) error {
 	return u.readerService.Create(ctx, reader)
 }
 
@@ -21,7 +21,7 @@ func (u *UseCase) GetReaderIdByName(ctx context.Context, name string) (int, erro
 }
 
 // DeleteReader уладить читателя из readers
-func (u *UseCase) DeleteReader(ctx context.Context, reader *models.Reader) error {
+func (u *UseCase) DeleteReader(ctx context.Context, reader models.Reader) error {
 	return u.readerService.Delete(ctx, reader)
 }
 

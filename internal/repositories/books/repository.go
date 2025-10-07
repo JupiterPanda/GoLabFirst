@@ -23,7 +23,7 @@ func NewRepo(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) Create(ctx context.Context, book *models.Book) error {
+func (r *Repository) Create(ctx context.Context, book models.Book) error {
 	query := `INSERT INTO books (title, author, issue, copies) VALUES ($1, $2, $3, $4) RETURNING id`
 	err := r.db.QueryRow(ctx, query, book.Title, book.Author, book.Issue, book.Copies).Scan(&book.ID)
 	if err != nil {
@@ -55,17 +55,17 @@ func (r *Repository) GetAll(ctx context.Context) ([]models.Book, error) {
 	return books, nil
 }
 
-func (r *Repository) GetByTitle(ctx context.Context, title string) (*models.Book, error) {
+func (r *Repository) GetByTitle(ctx context.Context, title string) (models.Book, error) {
 	var book models.Book
 	query := `SELECT id, title, author, issue, copies FROM books WHERE title=$1`
 	err := r.db.QueryRow(ctx, query, title).Scan(&book.ID, &book.Title, &book.Author, &book.Issue, &book.Copies)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, fmt.Errorf("[repo][GetByTitle] %w", ErrBookNotFound)
+			return models.Book{}, fmt.Errorf("[repo][GetByTitle] %w", ErrBookNotFound)
 		}
-		return nil, fmt.Errorf("[repo][GetByTitle] ошибка при запросе в БД: %w", err)
+		return models.Book{}, fmt.Errorf("[repo][GetByTitle] ошибка при запросе в БД: %w", err)
 	}
-	return &book, nil
+	return book, nil
 }
 
 func (r *Repository) GetIdByTitle(ctx context.Context, title string) (int, error) {
@@ -81,17 +81,17 @@ func (r *Repository) GetIdByTitle(ctx context.Context, title string) (int, error
 	return id, nil
 }
 
-func (r *Repository) GetByID(ctx context.Context, id int) (*models.Book, error) {
+func (r *Repository) GetByID(ctx context.Context, id int) (models.Book, error) {
 	var book models.Book
 	query := `SELECT id, title, author, issue, copies FROM books WHERE id=$1`
 	err := r.db.QueryRow(ctx, query, id).Scan(&book.ID, &book.Title, &book.Author, &book.Issue, &book.Copies)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, fmt.Errorf("[repo][GetByID] %w", ErrBookNotFound)
+			return models.Book{}, fmt.Errorf("[repo][GetByID] %w", ErrBookNotFound)
 		}
-		return nil, fmt.Errorf("[repo][GetByID] ошибка при запросе в БД: %w", err)
+		return models.Book{}, fmt.Errorf("[repo][GetByID] ошибка при запросе в БД: %w", err)
 	}
-	return &book, nil
+	return book, nil
 }
 
 func (r *Repository) CheckCopiesByID(ctx context.Context, id int) error {
@@ -110,11 +110,11 @@ func (r *Repository) CheckCopiesByID(ctx context.Context, id int) error {
 	return nil
 }
 
-func (r *Repository) CheckCopies(ctx context.Context, book *models.Book) error {
+func (r *Repository) CheckCopies(ctx context.Context, book models.Book) error {
 	return r.CheckCopiesByID(ctx, book.ID)
 }
 
-func (r *Repository) Delete(ctx context.Context, book *models.Book) error {
+func (r *Repository) Delete(ctx context.Context, book models.Book) error {
 	query := `DELETE FROM books WHERE id = $1`
 	cmdTag, err := r.db.Exec(ctx, query, book.ID)
 	if err != nil {

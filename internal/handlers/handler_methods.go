@@ -129,7 +129,7 @@ func (h *Handler) CreateBook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.CreateBook(c.Request.Context(), &book)
+	err := h.useCase.CreateBook(c.Request.Context(), book)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create book", "error": err.Error()})
 		return
@@ -143,7 +143,7 @@ func (h *Handler) DeleteBook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.DeleteBook(c.Request.Context(), &book)
+	err := h.useCase.DeleteBook(c.Request.Context(), book)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to delete book", "error": err.Error()})
 		return
@@ -173,7 +173,7 @@ func (h *Handler) CheckCopiesOfBook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.CheckCopiesOfBook(c.Request.Context(), &book)
+	err := h.useCase.CheckCopiesOfBook(c.Request.Context(), book)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"message": "No copies", "error": err.Error()})
 		return
@@ -223,7 +223,7 @@ func (h *Handler) CreateBookInUse(c *gin.Context) {
 		return
 	}
 	var bookInUse models.BookInUse
-	err := h.useCase.CreateBookInUse(c.Request.Context(), &bookInUse, input.ReaderId, input.BookID)
+	err := h.useCase.CreateBookInUse(c.Request.Context(), bookInUse, input.ReaderId, input.BookID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create book in use", "error": err.Error()})
 		return
@@ -320,7 +320,7 @@ func (h *Handler) CreateReader(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.CreateReader(c.Request.Context(), &reader)
+	err := h.useCase.CreateReader(c.Request.Context(), reader)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create reader", "error": err.Error()})
 		return
@@ -350,7 +350,7 @@ func (h *Handler) DeleteReader(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.DeleteReader(c.Request.Context(), &reader)
+	err := h.useCase.DeleteReader(c.Request.Context(), reader)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to delete reader", "error": err.Error()})
 		return

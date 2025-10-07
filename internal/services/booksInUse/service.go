@@ -3,7 +3,6 @@ package bookinuse
 import (
 	"context"
 	"goproject/internal/models"
-	repository "goproject/internal/repositories/booksinuse"
 	"time"
 )
 
@@ -13,7 +12,7 @@ type Service struct {
 }
 
 type bookInUseRepo interface {
-	Create(ctx context.Context, bookInUse *models.BookInUse, readerId int) error
+	Create(ctx context.Context, bookInUse models.BookInUse, readerId int) error
 	GetAll(ctx context.Context) ([]models.BookInUse, error)
 	CountByReaderId(ctx context.Context, readerId int) (int, error)
 	GetReadersIdsByBookId(ctx context.Context, bookId int) ([]int, error)
@@ -22,6 +21,6 @@ type bookInUseRepo interface {
 }
 
 // NewService создаёт новый репозиторий с пулом соединений к базе
-func NewService(repo *repository.Repository) *Service {
+func NewService(repo bookInUseRepo) *Service {
 	return &Service{repo: repo}
 }

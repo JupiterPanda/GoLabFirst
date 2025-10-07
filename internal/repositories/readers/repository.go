@@ -22,7 +22,7 @@ func NewRepo(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) Create(ctx context.Context, reader *models.Reader) error {
+func (r *Repository) Create(ctx context.Context, reader models.Reader) error {
 	query := `INSERT INTO readers (name, number, address, date_of_birth) VALUES ($1, $2, $3, $4) RETURNING id`
 	err := r.db.QueryRow(ctx, query, reader.Name, reader.PhoneNumber, reader.Address, reader.DateOfBirth).Scan(&reader.ID)
 	if err != nil {
@@ -67,7 +67,7 @@ func (r *Repository) GetIdByName(ctx context.Context, name string) (int, error) 
 	return readerID, nil
 }
 
-func (r *Repository) Delete(ctx context.Context, reader *models.Reader) error {
+func (r *Repository) Delete(ctx context.Context, reader models.Reader) error {
 	query := `DELETE FROM readers WHERE id = $1`
 	cmdTag, err := r.db.Exec(ctx, query, reader.ID)
 	if err != nil {

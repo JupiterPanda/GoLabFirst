@@ -11,7 +11,7 @@ func (s *Service) GetAll(ctx context.Context) ([]models.Reader, error) {
 }
 
 // Create Добавить читателя
-func (s *Service) Create(ctx context.Context, reader *models.Reader) error {
+func (s *Service) Create(ctx context.Context, reader models.Reader) error {
 	return s.repo.Create(ctx, reader)
 }
 
@@ -21,7 +21,7 @@ func (s *Service) GetIdByName(ctx context.Context, name string) (int, error) {
 }
 
 // Delete уладить читателя из readers
-func (s *Service) Delete(ctx context.Context, reader *models.Reader) error {
+func (s *Service) Delete(ctx context.Context, reader models.Reader) error {
 	return s.repo.Delete(ctx, reader)
 }
 

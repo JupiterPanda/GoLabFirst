@@ -26,7 +26,7 @@ func (u *UseCase) GetReaderBooksSepGoodAndBad(ctx context.Context, name string) 
 		if err != nil {
 			return nil, nil, fmt.Errorf("[useCase][GetByID] cannot get books in use by reader id: %w", err)
 		}
-		bookInUse := models.BookInUse{BookInfo: *bookInfo, DateOfRent: rentTime}
+		bookInUse := models.BookInUse{BookInfo: bookInfo, DateOfRent: rentTime}
 		booksInUse = append(booksInUse, bookInUse)
 	}
 
@@ -74,8 +74,8 @@ func (u *UseCase) RentBookByTitleAndReaderName(ctx context.Context, name, title 
 		return fmt.Errorf("[useCase][GetByID] cannot get book by id: %w", err)
 	}
 
-	bookInUse := models.BookInUse{BookInfo: *bookInfo, DateOfRent: time.Now()}
-	if err := u.bookInUseService.Create(ctx, &bookInUse, readerId); err != nil {
+	bookInUse := models.BookInUse{BookInfo: bookInfo, DateOfRent: time.Now()}
+	if err := u.bookInUseService.Create(ctx, bookInUse, readerId); err != nil {
 		return fmt.Errorf("[useCase][Create] cannot create book in use: %w", err)
 	}
 

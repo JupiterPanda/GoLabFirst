@@ -17,7 +17,7 @@ func NewRepo(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) Create(ctx context.Context, bookInUse *models.BookInUse, readerId int) error {
+func (r *Repository) Create(ctx context.Context, bookInUse models.BookInUse, readerId int) error {
 
 	query := `INSERT INTO reader_books (book_id, reader_id, date_of_rent) VALUES ($1, $2, $3)`
 	_, err := r.db.Exec(ctx, query, bookInUse.BookInfo.ID, readerId, time.Now())
