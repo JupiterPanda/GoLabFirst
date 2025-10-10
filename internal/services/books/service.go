@@ -2,34 +2,27 @@ package books
 
 import (
 	"context"
-	"errors"
 	"goproject/internal/models"
-	repository "goproject/internal/repository/repos"
 )
 
 type Service struct {
-	repo *repository.BookRepository
+	repo booksRepo
 }
 
-// Конструктор сервиса книги
-func NewService(repo *repository.BookRepository) *Service {
+type booksRepo interface {
+	GetByTitle(ctx context.Context, title string) (models.Book, error)
+	GetAll(ctx context.Context) ([]models.Book, error)
+	CheckCopiesByID(ctx context.Context, id int) error
+	CheckCopies(ctx context.Context, book models.Book) error
+	Delete(ctx context.Context, book models.Book) error
+	PlusCopyById(ctx context.Context, id int) error
+	MinusCopyById(ctx context.Context, id int) error
+	Create(ctx context.Context, book models.Book) error
+	GetByID(ctx context.Context, id int) (models.Book, error)
+	GetIdByTitle(ctx context.Context, title string) (int, error)
+}
+
+// NewService Конструктор сервиса книги
+func NewService(repo booksRepo) *Service {
 	return &Service{repo: repo}
-}
-
-// Получить все книги
-func (s *Service) GetAllBooks(ctx context.Context) ([]models.Book, error) {
-	return s.repo.GetAll(ctx)
-}
-
-// Добавить новую книгу
-func (s *Service) CreateBook(ctx context.Context, book *models.Book) error {
-	if book.Title == "" || book.Author == "" || book.Copies < 1 {
-		return errors.New("invalid book data")
-	}
-	return s.repo.Create(ctx, book)
-}
-
-// Получить книгу по названию
-func (s *Service) GetBookByTitle(ctx context.Context, title string) (*models.Book, error) {
-	return s.repo.GetByTitle(ctx, title)
 }
