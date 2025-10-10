@@ -228,7 +228,7 @@ func (h *Handler) CreateBookInUse(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create book in use", "error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Book in use created", "book": bookInUse})
+	c.JSON(http.StatusCreated, gin.H{"message": "Book in use created"})
 }
 
 func (h *Handler) GetAllBooksInUse(c *gin.Context) {
