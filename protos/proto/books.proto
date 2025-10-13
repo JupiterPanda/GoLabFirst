@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package books;
+
+option go_package = "/booksgrpc";
+
+import "google/protobuf/timestamp.proto";
+
+service BookService {
+  rpc GetAllBooks (Empty) returns (BookList);
+  rpc GetBookByTitle (BookTitleRequest) returns (Book);
+  rpc GetBookByID (BookIDRequest) returns (Book);
+  rpc CreateBook (Book) returns (Empty);
+  rpc DeleteBook (Book) returns (Empty);
+  rpc CheckCopiesOfBookByID (BookIDRequest) returns (Empty);
+  rpc CheckCopiesOfBook (Book) returns (Empty);
+  rpc MinusCopyOfBookById (BookIDRequest) returns (Empty);
+  rpc PlusCopyOfBookById (BookIDRequest) returns (Empty);
+}
+
+message Empty {}
+
+message Book {
+  int32 id = 1;
+  string title = 2;
+  int32 copies = 3;
+  string author = 4;
+  google.protobuf.Timestamp issue = 5;
+}
+
+message BookList {
+  repeated Book books = 1;
+}
+
+message BookTitleRequest {
+  string title = 1;
+}
+
+message BookIDRequest {
+  int32 id = 1;
+}
