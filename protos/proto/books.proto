@@ -2,23 +2,27 @@ syntax = "proto3";
 
 package books;
 
-option go_package = "/booksgrpc";
+option go_package = "/bookspb";
 
 import "google/protobuf/timestamp.proto";
 
 service BookService {
-  rpc GetAllBooks (Empty) returns (BookList);
+  rpc GetAllBooks (EmptyRequest) returns (BookList);
   rpc GetBookByTitle (BookTitleRequest) returns (Book);
   rpc GetBookByID (BookIDRequest) returns (Book);
-  rpc CreateBook (Book) returns (Empty);
-  rpc DeleteBook (Book) returns (Empty);
-  rpc CheckCopiesOfBookByID (BookIDRequest) returns (Empty);
-  rpc CheckCopiesOfBook (Book) returns (Empty);
-  rpc MinusCopyOfBookById (BookIDRequest) returns (Empty);
-  rpc PlusCopyOfBookById (BookIDRequest) returns (Empty);
+  rpc CreateBook (Book) returns (SimpleResponse);
+  rpc DeleteBook (Book) returns (SimpleResponse);
+  rpc CheckCopiesOfBookByID (BookIDRequest) returns (SimpleResponse);
+  rpc CheckCopiesOfBook (Book) returns (SimpleResponse);
+  rpc MinusCopyOfBookById (BookIDRequest) returns (SimpleResponse);
+  rpc PlusCopyOfBookById (BookIDRequest) returns (SimpleResponse);
 }
 
-message Empty {}
+message EmptyRequest {}
+
+message SimpleResponse {
+  string result = 1;
+}
 
 message Book {
   int32 id = 1;

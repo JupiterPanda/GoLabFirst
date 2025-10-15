@@ -9,6 +9,10 @@ type Handler struct {
 	useCase UseCase
 }
 
+func NewHandler(useCase UseCase) *Handler {
+	return &Handler{useCase: useCase}
+}
+
 type UseCase interface {
 	GetReaderBooksSepGoodAndBad(ctx context.Context, name string) ([]models.BookInUse, []models.BookInUse, error)
 	RentBookByTitleAndReaderName(ctx context.Context, name, title string) error
@@ -37,8 +41,4 @@ type UseCase interface {
 	GetReaderIdByName(ctx context.Context, name string) (int, error)
 	DeleteReader(ctx context.Context, reader models.Reader) error
 	UpdateReaderContactInfo(ctx context.Context, readerId int, phoneNumber string, address string) error
-}
-
-func NewHandler(useCase UseCase) *Handler {
-	return &Handler{useCase: useCase}
 }
