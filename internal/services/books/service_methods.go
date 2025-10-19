@@ -49,12 +49,12 @@ func (s *Service) CheckCopies(ctx context.Context, book models.Book) error {
 	return s.repo.CheckCopies(ctx, book)
 }
 
-// MinusCopyById Уменьшить кол-во копий книги
-func (s *Service) MinusCopyById(ctx context.Context, id int) error {
-	return s.repo.MinusCopyById(ctx, id)
+// SubtractCopyById Уменьшить кол-во копий книги
+func (s *Service) SubtractCopyById(ctx context.Context, id int) error {
+	return s.repo.SubtractCopyById(ctx, id)
 }
 
-// PlusCopyById Увеличить кол-во копий книги
-func (s *Service) PlusCopyById(ctx context.Context, id int) error {
-	return s.repo.PlusCopyById(ctx, id)
+// AddCopyById Увеличить кол-во копий книги
+func (s *Service) AddCopyById(ctx context.Context, id int) error {
+	return s.repo.AddCopyById(ctx, id)
 }

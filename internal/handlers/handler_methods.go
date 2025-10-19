@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetReaderBooksSepGoodAndBad возвращает: okbooks-непросроченные книги и badbooks-просроченные книги
 func (h *Handler) GetReaderBooksSepGoodAndBad(c *gin.Context) {
 	var input struct {
 		Name string `json:"name" binding:"required"`
@@ -181,7 +182,7 @@ func (h *Handler) CheckCopiesOfBook(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Copies available"})
 }
 
-func (h *Handler) MinusCopyOfBookById(c *gin.Context) {
+func (h *Handler) SubtractCopyOfBookById(c *gin.Context) {
 	var input struct {
 		ID int `json:"id" binding:"required"`
 	}
@@ -189,7 +190,7 @@ func (h *Handler) MinusCopyOfBookById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.MinusCopyOfBookById(c.Request.Context(), input.ID)
+	err := h.useCase.SubtractCopyOfBookById(c.Request.Context(), input.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to decrease copies", "error": err.Error()})
 		return
@@ -197,7 +198,7 @@ func (h *Handler) MinusCopyOfBookById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Decreased copies"})
 }
 
-func (h *Handler) PlusCopyOfBookById(c *gin.Context) {
+func (h *Handler) AddCopyOfBookById(c *gin.Context) {
 	var input struct {
 		ID int `json:"id" binding:"required"`
 	}
@@ -205,7 +206,7 @@ func (h *Handler) PlusCopyOfBookById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.PlusCopyOfBookById(c.Request.Context(), input.ID)
+	err := h.useCase.AddCopyOfBookById(c.Request.Context(), input.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to increase copies", "error": err.Error()})
 		return

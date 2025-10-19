@@ -49,12 +49,12 @@ func (u *UseCase) CheckCopiesOfBook(ctx context.Context, book models.Book) error
 	return u.bookService.CheckCopies(ctx, book)
 }
 
-// MinusCopyOfBookById Уменьшить кол-во копий книги
-func (u *UseCase) MinusCopyOfBookById(ctx context.Context, id int) error {
-	return u.bookService.MinusCopyById(ctx, id)
+// SubtractCopyOfBookById Уменьшить кол-во копий книги
+func (u *UseCase) SubtractCopyOfBookById(ctx context.Context, id int) error {
+	return u.bookService.SubtractCopyById(ctx, id)
 }
 
-// PlusCopyOfBookById Увеличить кол-во копий книги
-func (u *UseCase) PlusCopyOfBookById(ctx context.Context, id int) error {
-	return u.bookService.PlusCopyById(ctx, id)
+// AddCopyOfBookById Увеличить кол-во копий книги
+func (u *UseCase) AddCopyOfBookById(ctx context.Context, id int) error {
+	return u.bookService.AddCopyById(ctx, id)
 }

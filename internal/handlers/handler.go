@@ -22,8 +22,8 @@ type UseCase interface {
 	DeleteBook(ctx context.Context, book models.Book) error
 	CheckCopiesOfBookByID(ctx context.Context, id int) error
 	CheckCopiesOfBook(ctx context.Context, book models.Book) error
-	MinusCopyOfBookById(ctx context.Context, id int) error
-	PlusCopyOfBookById(ctx context.Context, id int) error
+	SubtractCopyOfBookById(ctx context.Context, id int) error
+	AddCopyOfBookById(ctx context.Context, id int) error
 
 	CreateBookInUse(ctx context.Context, bookInUse models.BookInUse, readerId int, bookId int) error
 	GetAllBooksInUse(ctx context.Context) ([]models.BookInUse, error)

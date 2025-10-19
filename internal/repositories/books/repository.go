@@ -126,34 +126,34 @@ func (r *Repository) Delete(ctx context.Context, book models.Book) error {
 	return nil
 }
 
-func (r *Repository) PlusCopyById(ctx context.Context, id int) error {
+func (r *Repository) AddCopyById(ctx context.Context, id int) error {
 	query := `UPDATE books SET copies = copies + 1 WHERE id = $1`
 	cmdTag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
-		return fmt.Errorf("[repo][PlusCopyById] ошибка при запросе в БД: %w", err)
+		return fmt.Errorf("[repo][AddCopyById] ошибка при запросе в БД: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("[repo][PlusCopyById] %w", ErrBookNotFound)
+		return fmt.Errorf("[repo][AddCopyById] %w", ErrBookNotFound)
 	}
 	return nil
 }
 
-func (r *Repository) MinusCopyById(ctx context.Context, id int) error {
+func (r *Repository) SubtractCopyById(ctx context.Context, id int) error {
 	query := `UPDATE books SET copies = copies - 1 WHERE id = $1 AND copies > 0`
 	cmdTag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
-		return fmt.Errorf("[repo][MinusCopyById] ошибка при запросе в БД: %w", err)
+		return fmt.Errorf("[repo][SubtractCopyById] ошибка при запросе в БД: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
 		if err := r.CheckCopiesByID(ctx, id); err != nil {
 			if errors.Is(err, ErrBookNotFound) {
-				return fmt.Errorf("[repo][MinusCopyById] %w", ErrBookNotFound)
+				return fmt.Errorf("[repo][SubtractCopyById] %w", ErrBookNotFound)
 			}
 			if errors.Is(err, ErrBookOutOfStock) {
-				return fmt.Errorf("[repo][MinusCopyById] %w", ErrBookOutOfStock)
+				return fmt.Errorf("[repo][SubtractCopyById] %w", ErrBookOutOfStock)
 			}
 		}
-		return fmt.Errorf("[repo][MinusCopyById] не удалось уменьшить копии")
+		return fmt.Errorf("[repo][SubtractCopyById] не удалось уменьшить копии")
 	}
 	return nil
 }

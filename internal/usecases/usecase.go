@@ -21,8 +21,8 @@ type bookService interface {
 	CheckCopies(ctx context.Context, book models.Book) error
 	Create(ctx context.Context, book models.Book) error
 	Delete(ctx context.Context, book models.Book) error
-	PlusCopyById(ctx context.Context, id int) error
-	MinusCopyById(ctx context.Context, id int) error
+	AddCopyById(ctx context.Context, id int) error
+	SubtractCopyById(ctx context.Context, id int) error
 }
 
 type readerService interface {
