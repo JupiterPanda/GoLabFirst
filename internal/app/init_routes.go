@@ -24,7 +24,6 @@ func initRouter(handler *handlers.Handler) *gin.Engine {
 
 	// Копии книги
 	router.POST("/book/check/id", handler.CheckCopiesOfBookByID)
-	router.POST("/book/check", handler.CheckCopiesOfBook)
 	router.PATCH("/book/minus", handler.SubtractCopyOfBookById)
 	router.PATCH("/book/plus", handler.AddCopyOfBookById)
 

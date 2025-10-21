@@ -65,8 +65,8 @@ func (u *UseCase) RentBookByTitleAndReaderName(ctx context.Context, name, title 
 		return fmt.Errorf("max books limit reached")
 	}
 
-	if err := u.bookService.MinusCopyById(ctx, bookId); err != nil {
-		return fmt.Errorf("[useCase][MinusCopyById] cannot decrease book copies: %w", err)
+	if err := u.bookService.SubtractCopyById(ctx, bookId); err != nil {
+		return fmt.Errorf("[useCase][SubtractCopyById] cannot decrease book copies: %w", err)
 	}
 
 	bookInfo, err := u.bookService.GetByID(ctx, bookId)
@@ -94,8 +94,8 @@ func (u *UseCase) ReturnBookByTitleAndReaderName(ctx context.Context, name, titl
 		return fmt.Errorf("[useCase][GetIdByName] cannot get reader id by name: %w", err)
 	}
 
-	if err := u.bookService.PlusCopyById(ctx, bookId); err != nil {
-		return fmt.Errorf("[useCase][PlusCopyById] cannot increase book copies: %w", err)
+	if err := u.bookService.AddCopyById(ctx, bookId); err != nil {
+		return fmt.Errorf("[useCase][AddCopyById] cannot increase book copies: %w", err)
 	}
 
 	if err := u.bookInUseService.Delete(ctx, readerId, bookId); err != nil {

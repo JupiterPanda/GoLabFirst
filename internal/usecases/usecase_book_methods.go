@@ -35,18 +35,13 @@ func (u *UseCase) CreateBook(ctx context.Context, book models.Book) error {
 }
 
 // DeleteBook удаляет из бд книгу (!!! Удалит книги и в таблице reader_books!!!)
-func (u *UseCase) DeleteBook(ctx context.Context, book models.Book) error {
-	return u.bookService.Delete(ctx, book)
+func (u *UseCase) DeleteBook(ctx context.Context, id int) error {
+	return u.bookService.Delete(ctx, id)
 }
 
 // CheckCopiesOfBookByID проверяет кол-во книг в наличии по ID (if nil then copies > 0)
 func (u *UseCase) CheckCopiesOfBookByID(ctx context.Context, id int) error {
 	return u.bookService.CheckCopiesByID(ctx, id)
-}
-
-// CheckCopiesOfBook проверяет кол-во книг в наличии (if nil then copies > 0)
-func (u *UseCase) CheckCopiesOfBook(ctx context.Context, book models.Book) error {
-	return u.bookService.CheckCopies(ctx, book)
 }
 
 // SubtractCopyOfBookById Уменьшить кол-во копий книги

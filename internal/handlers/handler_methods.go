@@ -139,12 +139,14 @@ func (h *Handler) CreateBook(c *gin.Context) {
 }
 
 func (h *Handler) DeleteBook(c *gin.Context) {
-	var book models.Book
-	if err := c.BindJSON(&book); err != nil {
+	var input struct {
+		ID int `json:"id" binding:"required"`
+	}
+	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.DeleteBook(c.Request.Context(), book)
+	err := h.useCase.DeleteBook(c.Request.Context(), input.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to delete book", "error": err.Error()})
 		return
@@ -161,20 +163,6 @@ func (h *Handler) CheckCopiesOfBookByID(c *gin.Context) {
 		return
 	}
 	err := h.useCase.CheckCopiesOfBookByID(c.Request.Context(), input.ID)
-	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{"message": "No copies", "error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Copies available"})
-}
-
-func (h *Handler) CheckCopiesOfBook(c *gin.Context) {
-	var book models.Book
-	if err := c.BindJSON(&book); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
-		return
-	}
-	err := h.useCase.CheckCopiesOfBook(c.Request.Context(), book)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"message": "No copies", "error": err.Error()})
 		return
@@ -346,12 +334,14 @@ func (h *Handler) GetReaderIdByName(c *gin.Context) {
 }
 
 func (h *Handler) DeleteReader(c *gin.Context) {
-	var reader models.Reader
-	if err := c.BindJSON(&reader); err != nil {
+	var input struct {
+		ReaderId int `json:"reader_id" binding:"required"`
+	}
+	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.DeleteReader(c.Request.Context(), reader)
+	err := h.useCase.DeleteReader(c.Request.Context(), input.ReaderId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to delete reader", "error": err.Error()})
 		return

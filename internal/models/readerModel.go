@@ -9,5 +9,4 @@ type Reader struct {
 	PhoneNumber string    `json:"phone_number"`  // Номер телефона
 	Address     string    `json:"address"`       // Адрес
 	DateOfBirth time.Time `json:"date_of_birth"` // Дата рождения
-	// BooksInUse  []BookInUse `json:"booksInUse"`    // Книги, взятые в пользование
 }
