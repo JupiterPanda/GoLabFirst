@@ -2,14 +2,18 @@ package app
 
 import (
 	"context"
+	"goproject/internal/delivery/libgrpc"
 	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
+	"goproject/protos/gen/librarypb"
+	"net"
 
 	"log"
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
 )
 
 // Run инициализирует подключение к базе, применяет миграции и запускает приложение
@@ -34,14 +38,28 @@ func Run() {
 		log.Fatalf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
 
-	// Инициируем handler
-	handler := initHandler(pool)
-	log.Println("Все типы и бд проинициализированы")
+	/*	// Инициируем handler
+		useCase := initUseCase(pool)
+		handler := handlers.NewHandler(useCase)
+		log.Println("Все структуры, типы и бд проинициализированы")
 
-	// Инициируем роутер
-	router := initRouter(handler)
-	err = router.Run("localhost:8080")
+		// Инициируем роутер
+		router := initRouter(handler)
+		err = router.Run("localhost:8080")
+		if err != nil {
+			return
+		}*/
+
+	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
-		return
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	grpcServer := grpc.NewServer()
+	librarypb.RegisterLibraryServer(grpcServer, libgrpc.NewGRPCServer(initUseCase(pool)))
+
+	log.Println("gRPC server listening on :8080")
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 }
