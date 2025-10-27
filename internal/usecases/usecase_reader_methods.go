@@ -21,8 +21,8 @@ func (u *UseCase) GetReaderIdByName(ctx context.Context, name string) (int, erro
 }
 
 // DeleteReader уладить читателя из readers
-func (u *UseCase) DeleteReader(ctx context.Context, reader models.Reader) error {
-	return u.readerService.Delete(ctx, reader)
+func (u *UseCase) DeleteReader(ctx context.Context, id int) error {
+	return u.readerService.Delete(ctx, id)
 }
 
 // UpdateReaderContactInfo обновит значения номера телефона или адреса

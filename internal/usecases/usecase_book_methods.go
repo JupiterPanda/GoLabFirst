@@ -35,8 +35,8 @@ func (u *UseCase) CreateBook(ctx context.Context, book models.Book) error {
 }
 
 // DeleteBook удаляет из бд книгу (!!! Удалит книги и в таблице reader_books!!!)
-func (u *UseCase) DeleteBook(ctx context.Context, book models.Book) error {
-	return u.bookService.Delete(ctx, book)
+func (u *UseCase) DeleteBook(ctx context.Context, id int) error {
+	return u.bookService.Delete(ctx, id)
 }
 
 // CheckCopiesOfBookByID проверяет кол-во книг в наличии по ID (if nil then copies > 0)
@@ -44,17 +44,12 @@ func (u *UseCase) CheckCopiesOfBookByID(ctx context.Context, id int) error {
 	return u.bookService.CheckCopiesByID(ctx, id)
 }
 
-// CheckCopiesOfBook проверяет кол-во книг в наличии (if nil then copies > 0)
-func (u *UseCase) CheckCopiesOfBook(ctx context.Context, book models.Book) error {
-	return u.bookService.CheckCopies(ctx, book)
+// SubtractCopyOfBookById Уменьшить кол-во копий книги
+func (u *UseCase) SubtractCopyOfBookById(ctx context.Context, id int) error {
+	return u.bookService.SubtractCopyById(ctx, id)
 }
 
-// MinusCopyOfBookById Уменьшить кол-во копий книги
-func (u *UseCase) MinusCopyOfBookById(ctx context.Context, id int) error {
-	return u.bookService.MinusCopyById(ctx, id)
-}
-
-// PlusCopyOfBookById Увеличить кол-во копий книги
-func (u *UseCase) PlusCopyOfBookById(ctx context.Context, id int) error {
-	return u.bookService.PlusCopyById(ctx, id)
+// AddCopyOfBookById Увеличить кол-во копий книги
+func (u *UseCase) AddCopyOfBookById(ctx context.Context, id int) error {
+	return u.bookService.AddCopyById(ctx, id)
 }

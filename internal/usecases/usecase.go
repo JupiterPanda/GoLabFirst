@@ -18,18 +18,17 @@ type bookService interface {
 	GetByID(ctx context.Context, id int) (models.Book, error)
 	GetIdByTitle(ctx context.Context, title string) (int, error)
 	CheckCopiesByID(ctx context.Context, id int) error
-	CheckCopies(ctx context.Context, book models.Book) error
 	Create(ctx context.Context, book models.Book) error
-	Delete(ctx context.Context, book models.Book) error
-	PlusCopyById(ctx context.Context, id int) error
-	MinusCopyById(ctx context.Context, id int) error
+	Delete(ctx context.Context, id int) error
+	AddCopyById(ctx context.Context, id int) error
+	SubtractCopyById(ctx context.Context, id int) error
 }
 
 type readerService interface {
 	GetAll(ctx context.Context) ([]models.Reader, error)
 	Create(ctx context.Context, reader models.Reader) error
 	GetIdByName(ctx context.Context, name string) (int, error)
-	Delete(ctx context.Context, reader models.Reader) error
+	Delete(ctx context.Context, id int) error
 	UpdateContactInfo(ctx context.Context, readerId int, phoneNumber string, address string) error
 }
 

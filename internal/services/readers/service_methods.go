@@ -21,8 +21,8 @@ func (s *Service) GetIdByName(ctx context.Context, name string) (int, error) {
 }
 
 // Delete уладить читателя из readers
-func (s *Service) Delete(ctx context.Context, reader models.Reader) error {
-	return s.repo.Delete(ctx, reader)
+func (s *Service) Delete(ctx context.Context, id int) error {
+	return s.repo.Delete(ctx, id)
 }
 
 // UpdateContactInfo обновит значения номера телефона или адреса

@@ -5,14 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"goproject/internal/models"
+	constants "goproject/internal/package"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-)
-
-var (
-	ErrBookNotFound   = errors.New("книга не найдена")
-	ErrBookOutOfStock = errors.New("книга закончилась")
 )
 
 type Repository struct {
@@ -24,8 +20,8 @@ func NewRepo(db *pgxpool.Pool) *Repository {
 }
 
 func (r *Repository) Create(ctx context.Context, book models.Book) error {
-	query := `INSERT INTO books (title, author, issue, copies) VALUES ($1, $2, $3, $4) RETURNING id`
-	err := r.db.QueryRow(ctx, query, book.Title, book.Author, book.Issue, book.Copies).Scan(&book.ID)
+	query := `INSERT INTO books (title, author, issue, copies) VALUES ($1, $2, $3, $4)`
+	err := r.db.QueryRow(ctx, query, book.Title, book.Author, book.Issue, book.Copies)
 	if err != nil {
 		// TODO Проверка на вставку дубликата.
 		return fmt.Errorf("[repo][Create] ошибка при запросе в БД: %w", err)
@@ -61,7 +57,7 @@ func (r *Repository) GetByTitle(ctx context.Context, title string) (models.Book,
 	err := r.db.QueryRow(ctx, query, title).Scan(&book.ID, &book.Title, &book.Author, &book.Issue, &book.Copies)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return models.Book{}, fmt.Errorf("[repo][GetByTitle] %w", ErrBookNotFound)
+			return models.Book{}, fmt.Errorf("[repo][GetByTitle] %w", constants.ErrBookNotFound)
 		}
 		return models.Book{}, fmt.Errorf("[repo][GetByTitle] ошибка при запросе в БД: %w", err)
 	}
@@ -74,7 +70,7 @@ func (r *Repository) GetIdByTitle(ctx context.Context, title string) (int, error
 	err := r.db.QueryRow(ctx, query, title).Scan(&id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return 0, fmt.Errorf("[repo][GetIdByTitle] %w", ErrBookNotFound)
+			return 0, fmt.Errorf("[repo][GetIdByTitle] %w", constants.ErrBookNotFound)
 		}
 		return 0, fmt.Errorf("[repo][GetIdByTitle] ошибка при запросе в БД: %w", err)
 	}
@@ -87,7 +83,7 @@ func (r *Repository) GetByID(ctx context.Context, id int) (models.Book, error) {
 	err := r.db.QueryRow(ctx, query, id).Scan(&book.ID, &book.Title, &book.Author, &book.Issue, &book.Copies)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return models.Book{}, fmt.Errorf("[repo][GetByID] %w", ErrBookNotFound)
+			return models.Book{}, fmt.Errorf("[repo][GetByID] %w", constants.ErrBookNotFound)
 		}
 		return models.Book{}, fmt.Errorf("[repo][GetByID] ошибка при запросе в БД: %w", err)
 	}
@@ -100,60 +96,56 @@ func (r *Repository) CheckCopiesByID(ctx context.Context, id int) error {
 	err := r.db.QueryRow(ctx, query, id).Scan(&copies)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return fmt.Errorf("[repo][CheckCopiesByID] %w", ErrBookNotFound)
+			return fmt.Errorf("[repo][CheckCopiesByID] %w", constants.ErrBookNotFound)
 		}
 		return fmt.Errorf("[repo][CheckCopiesByID] ошибка при запросе в БД: %w", err)
 	}
 	if copies <= 0 {
-		return fmt.Errorf("[repo][CheckCopiesByID] %w", ErrBookOutOfStock)
+		return fmt.Errorf("[repo][CheckCopiesByID] %w", constants.ErrBookOutOfStock)
 	}
 	return nil
 }
 
-func (r *Repository) CheckCopies(ctx context.Context, book models.Book) error {
-	return r.CheckCopiesByID(ctx, book.ID)
-}
-
-func (r *Repository) Delete(ctx context.Context, book models.Book) error {
+func (r *Repository) Delete(ctx context.Context, id int) error {
 	query := `DELETE FROM books WHERE id = $1`
-	cmdTag, err := r.db.Exec(ctx, query, book.ID)
+	cmdTag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("[repo][Delete] ошибка при запросе в БД: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("[repo][Delete] %w", ErrBookNotFound)
+		return fmt.Errorf("[repo][Delete] %w", constants.ErrBookNotFound)
 	}
 	return nil
 }
 
-func (r *Repository) PlusCopyById(ctx context.Context, id int) error {
+func (r *Repository) AddCopyById(ctx context.Context, id int) error {
 	query := `UPDATE books SET copies = copies + 1 WHERE id = $1`
 	cmdTag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
-		return fmt.Errorf("[repo][PlusCopyById] ошибка при запросе в БД: %w", err)
+		return fmt.Errorf("[repo][AddCopyById] ошибка при запросе в БД: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("[repo][PlusCopyById] %w", ErrBookNotFound)
+		return fmt.Errorf("[repo][AddCopyById] %w", constants.ErrBookNotFound)
 	}
 	return nil
 }
 
-func (r *Repository) MinusCopyById(ctx context.Context, id int) error {
+func (r *Repository) SubtractCopyById(ctx context.Context, id int) error {
 	query := `UPDATE books SET copies = copies - 1 WHERE id = $1 AND copies > 0`
 	cmdTag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
-		return fmt.Errorf("[repo][MinusCopyById] ошибка при запросе в БД: %w", err)
+		return fmt.Errorf("[repo][SubtractCopyById] ошибка при запросе в БД: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
 		if err := r.CheckCopiesByID(ctx, id); err != nil {
-			if errors.Is(err, ErrBookNotFound) {
-				return fmt.Errorf("[repo][MinusCopyById] %w", ErrBookNotFound)
+			if errors.Is(err, constants.ErrBookNotFound) {
+				return fmt.Errorf("[repo][SubtractCopyById] %w", constants.ErrBookNotFound)
 			}
-			if errors.Is(err, ErrBookOutOfStock) {
-				return fmt.Errorf("[repo][MinusCopyById] %w", ErrBookOutOfStock)
+			if errors.Is(err, constants.ErrBookOutOfStock) {
+				return fmt.Errorf("[repo][SubtractCopyById] %w", constants.ErrBookOutOfStock)
 			}
 		}
-		return fmt.Errorf("[repo][MinusCopyById] не удалось уменьшить копии")
+		return fmt.Errorf("[repo][SubtractCopyById] не удалось уменьшить копии")
 	}
 	return nil
 }

@@ -35,8 +35,8 @@ func (s *Service) Create(ctx context.Context, book models.Book) error {
 }
 
 // Delete удаляет из бд книгу (!!! Удалит книги и в таблице reader_books!!!)
-func (s *Service) Delete(ctx context.Context, book models.Book) error {
-	return s.repo.Delete(ctx, book)
+func (s *Service) Delete(ctx context.Context, id int) error {
+	return s.repo.Delete(ctx, id)
 }
 
 // CheckCopiesByID проверяет кол-во книг в наличии по ID (if nil then copies > 0)
@@ -44,17 +44,12 @@ func (s *Service) CheckCopiesByID(ctx context.Context, id int) error {
 	return s.repo.CheckCopiesByID(ctx, id)
 }
 
-// CheckCopies проверяет кол-во книг в наличии (if nil then copies > 0)
-func (s *Service) CheckCopies(ctx context.Context, book models.Book) error {
-	return s.repo.CheckCopies(ctx, book)
+// SubtractCopyById Уменьшить кол-во копий книги
+func (s *Service) SubtractCopyById(ctx context.Context, id int) error {
+	return s.repo.SubtractCopyById(ctx, id)
 }
 
-// MinusCopyById Уменьшить кол-во копий книги
-func (s *Service) MinusCopyById(ctx context.Context, id int) error {
-	return s.repo.MinusCopyById(ctx, id)
-}
-
-// PlusCopyById Увеличить кол-во копий книги
-func (s *Service) PlusCopyById(ctx context.Context, id int) error {
-	return s.repo.PlusCopyById(ctx, id)
+// AddCopyById Увеличить кол-во копий книги
+func (s *Service) AddCopyById(ctx context.Context, id int) error {
+	return s.repo.AddCopyById(ctx, id)
 }

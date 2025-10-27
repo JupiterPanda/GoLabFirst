@@ -13,10 +13,9 @@ type booksRepo interface {
 	GetByTitle(ctx context.Context, title string) (models.Book, error)
 	GetAll(ctx context.Context) ([]models.Book, error)
 	CheckCopiesByID(ctx context.Context, id int) error
-	CheckCopies(ctx context.Context, book models.Book) error
-	Delete(ctx context.Context, book models.Book) error
-	PlusCopyById(ctx context.Context, id int) error
-	MinusCopyById(ctx context.Context, id int) error
+	Delete(ctx context.Context, id int) error
+	AddCopyById(ctx context.Context, id int) error
+	SubtractCopyById(ctx context.Context, id int) error
 	Create(ctx context.Context, book models.Book) error
 	GetByID(ctx context.Context, id int) (models.Book, error)
 	GetIdByTitle(ctx context.Context, title string) (int, error)

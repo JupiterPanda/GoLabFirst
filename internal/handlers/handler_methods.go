@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetReaderBooksSepGoodAndBad возвращает: okbooks-непросроченные книги и badbooks-просроченные книги
 func (h *Handler) GetReaderBooksSepGoodAndBad(c *gin.Context) {
 	var input struct {
 		Name string `json:"name" binding:"required"`
@@ -138,12 +139,14 @@ func (h *Handler) CreateBook(c *gin.Context) {
 }
 
 func (h *Handler) DeleteBook(c *gin.Context) {
-	var book models.Book
-	if err := c.BindJSON(&book); err != nil {
+	var input struct {
+		ID int `json:"id" binding:"required"`
+	}
+	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.DeleteBook(c.Request.Context(), book)
+	err := h.useCase.DeleteBook(c.Request.Context(), input.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to delete book", "error": err.Error()})
 		return
@@ -167,21 +170,7 @@ func (h *Handler) CheckCopiesOfBookByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Copies available"})
 }
 
-func (h *Handler) CheckCopiesOfBook(c *gin.Context) {
-	var book models.Book
-	if err := c.BindJSON(&book); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
-		return
-	}
-	err := h.useCase.CheckCopiesOfBook(c.Request.Context(), book)
-	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{"message": "No copies", "error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Copies available"})
-}
-
-func (h *Handler) MinusCopyOfBookById(c *gin.Context) {
+func (h *Handler) SubtractCopyOfBookById(c *gin.Context) {
 	var input struct {
 		ID int `json:"id" binding:"required"`
 	}
@@ -189,7 +178,7 @@ func (h *Handler) MinusCopyOfBookById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.MinusCopyOfBookById(c.Request.Context(), input.ID)
+	err := h.useCase.SubtractCopyOfBookById(c.Request.Context(), input.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to decrease copies", "error": err.Error()})
 		return
@@ -197,7 +186,7 @@ func (h *Handler) MinusCopyOfBookById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Decreased copies"})
 }
 
-func (h *Handler) PlusCopyOfBookById(c *gin.Context) {
+func (h *Handler) AddCopyOfBookById(c *gin.Context) {
 	var input struct {
 		ID int `json:"id" binding:"required"`
 	}
@@ -205,7 +194,7 @@ func (h *Handler) PlusCopyOfBookById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.PlusCopyOfBookById(c.Request.Context(), input.ID)
+	err := h.useCase.AddCopyOfBookById(c.Request.Context(), input.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to increase copies", "error": err.Error()})
 		return
@@ -345,12 +334,14 @@ func (h *Handler) GetReaderIdByName(c *gin.Context) {
 }
 
 func (h *Handler) DeleteReader(c *gin.Context) {
-	var reader models.Reader
-	if err := c.BindJSON(&reader); err != nil {
+	var input struct {
+		ReaderId int `json:"reader_id" binding:"required"`
+	}
+	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	err := h.useCase.DeleteReader(c.Request.Context(), reader)
+	err := h.useCase.DeleteReader(c.Request.Context(), input.ReaderId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to delete reader", "error": err.Error()})
 		return

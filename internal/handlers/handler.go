@@ -23,11 +23,10 @@ type UseCase interface {
 	GetBookIdByTitle(ctx context.Context, title string) (int, error)
 	GetBookByID(ctx context.Context, id int) (models.Book, error)
 	CreateBook(ctx context.Context, book models.Book) error
-	DeleteBook(ctx context.Context, book models.Book) error
+	DeleteBook(ctx context.Context, id int) error
 	CheckCopiesOfBookByID(ctx context.Context, id int) error
-	CheckCopiesOfBook(ctx context.Context, book models.Book) error
-	MinusCopyOfBookById(ctx context.Context, id int) error
-	PlusCopyOfBookById(ctx context.Context, id int) error
+	SubtractCopyOfBookById(ctx context.Context, id int) error
+	AddCopyOfBookById(ctx context.Context, id int) error
 
 	CreateBookInUse(ctx context.Context, bookInUse models.BookInUse, readerId int, bookId int) error
 	GetAllBooksInUse(ctx context.Context) ([]models.BookInUse, error)
@@ -39,6 +38,6 @@ type UseCase interface {
 	GetAllReaders(ctx context.Context) ([]models.Reader, error)
 	CreateReader(ctx context.Context, reader models.Reader) error
 	GetReaderIdByName(ctx context.Context, name string) (int, error)
-	DeleteReader(ctx context.Context, reader models.Reader) error
+	DeleteReader(ctx context.Context, id int) error
 	UpdateReaderContactInfo(ctx context.Context, readerId int, phoneNumber string, address string) error
 }
