@@ -2,6 +2,7 @@ package libgrpc
 
 import (
 	"context"
+	"fmt"
 	"goproject/internal/models"
 	"goproject/protos/gen/librarypb"
 
@@ -69,8 +70,8 @@ func (s *GRPCServer) GetBookByID(ctx context.Context, req *librarypb.BookIdReque
 }
 
 func (s *GRPCServer) CreateBook(ctx context.Context, req *librarypb.CreateBookRequest) (*librarypb.MessageResponse, error) {
+	fmt.Println(req.Book.Title)
 	book := models.Book{
-		ID:     int(req.Book.ID),
 		Title:  req.Book.Title,
 		Copies: int(req.Book.Copies),
 		Author: req.Book.Author,
@@ -80,7 +81,7 @@ func (s *GRPCServer) CreateBook(ctx context.Context, req *librarypb.CreateBookRe
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: ("Book created")}
+	res := &librarypb.MessageResponse{Message: "Book created"}
 	return res, nil
 }
 
@@ -89,7 +90,7 @@ func (s *GRPCServer) DeleteBook(ctx context.Context, req *librarypb.BookIdReques
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: ("Book deleted")}
+	res := &librarypb.MessageResponse{Message: "Book deleted"}
 	return res, nil
 }
 
@@ -98,7 +99,7 @@ func (s *GRPCServer) CheckCopiesOfBookByID(ctx context.Context, req *librarypb.B
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: ("Alailable to rent")}
+	res := &librarypb.MessageResponse{Message: "Available to rent"}
 	return res, nil
 }
 
@@ -107,7 +108,7 @@ func (s *GRPCServer) SubtractCopyOfBookById(ctx context.Context, req *librarypb.
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: ("Copies decreased")}
+	res := &librarypb.MessageResponse{Message: "Copies decreased"}
 	return res, nil
 }
 
@@ -116,6 +117,6 @@ func (s *GRPCServer) AddCopyOfBookById(ctx context.Context, req *librarypb.BookI
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: ("Copies increased")}
+	res := &librarypb.MessageResponse{Message: "Copies increased"}
 	return res, nil
 }

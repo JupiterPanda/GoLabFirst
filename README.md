@@ -6,5 +6,4 @@ docker compose --env-file .env up -d
 go run cmd/main.go 
 
 ### Генерация из .proto файла
-protoc --go_out=./protos/gen --go-grpc_out=./protos/gen 
-    --proto_path=./protos/proto library.proto
+protoc --go_out=./protos/gen --go-grpc_out=./protos/gen --proto_path=./protos/proto library.proto

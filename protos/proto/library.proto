@@ -56,17 +56,12 @@ message CreateReaderRequest {
   Reader reader = 1;
 }
 
-message CreateBookInUseRequest {
+message BookInUseIdRequest {
   int32 book_id = 1;
   int32 reader_id = 2;
 }
 
-message RentBookRequest {
-  string name = 1;
-  string title = 2;
-}
-
-message ReturnBookRequest {
+message RentOrReturnBookRequest {
   string name = 1;
   string title = 2;
 }
@@ -99,6 +94,11 @@ message ReaderIdsResponse {
   repeated int32 reader_ids = 1;
 }
 
+message ReadersBooksResponse {
+  repeated BookInUse ok_books = 1;
+  repeated BookInUse bad_books = 2;
+}
+
 service Library {
   // Books
   rpc GetAllBooks(google.protobuf.Empty) returns (BooksResponse);
@@ -119,13 +119,14 @@ service Library {
   rpc UpdateReaderContactInfo(Reader) returns (MessageResponse);
 
   // Rentals (InUse)
-  rpc CreateBookInUse(CreateBookInUseRequest) returns (MessageResponse);
+  rpc CreateBookInUse(BookInUseIdRequest) returns (MessageResponse);
   rpc GetAllBooksInUse(google.protobuf.Empty) returns (BooksInUseResponse);
   rpc CountBookInUseByReaderId(ReaderIdRequest) returns (CountResponse);
   rpc GetBooksInUseByReaderId(ReaderIdRequest) returns (BooksInUseResponse);
-  rpc DeleteBookInUse(CreateBookInUseRequest) returns (MessageResponse);
+  rpc DeleteBookInUse(BookInUseIdRequest) returns (MessageResponse);
 
-  rpc RentBookByTitleAndReaderName(RentBookRequest) returns (MessageResponse);
-  rpc ReturnBookByTitleAndReaderName(ReturnBookRequest) returns (MessageResponse);
+  rpc RentBookByTitleAndReaderName(RentOrReturnBookRequest) returns (MessageResponse);
+  rpc ReturnBookByTitleAndReaderName(RentOrReturnBookRequest) returns (MessageResponse);
   rpc GetReadersIdsByBookId(BookIdRequest) returns (ReaderIdsResponse);
+  rpc GetReaderBooksSepGoodAndBad(ReaderNameRequest) returns (ReadersBooksResponse);
 }

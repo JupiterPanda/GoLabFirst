@@ -543,7 +543,7 @@ func (x *CreateReaderRequest) GetReader() *Reader {
 	return nil
 }
 
-type CreateBookInUseRequest struct {
+type BookInUseIdRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	BookId        int32                  `protobuf:"varint,1,opt,name=book_id,json=bookId,proto3" json:"book_id,omitempty"`
 	ReaderId      int32                  `protobuf:"varint,2,opt,name=reader_id,json=readerId,proto3" json:"reader_id,omitempty"`
@@ -551,20 +551,20 @@ type CreateBookInUseRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateBookInUseRequest) Reset() {
-	*x = CreateBookInUseRequest{}
+func (x *BookInUseIdRequest) Reset() {
+	*x = BookInUseIdRequest{}
 	mi := &file_library_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateBookInUseRequest) String() string {
+func (x *BookInUseIdRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateBookInUseRequest) ProtoMessage() {}
+func (*BookInUseIdRequest) ProtoMessage() {}
 
-func (x *CreateBookInUseRequest) ProtoReflect() protoreflect.Message {
+func (x *BookInUseIdRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_library_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -576,26 +576,26 @@ func (x *CreateBookInUseRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateBookInUseRequest.ProtoReflect.Descriptor instead.
-func (*CreateBookInUseRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use BookInUseIdRequest.ProtoReflect.Descriptor instead.
+func (*BookInUseIdRequest) Descriptor() ([]byte, []int) {
 	return file_library_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *CreateBookInUseRequest) GetBookId() int32 {
+func (x *BookInUseIdRequest) GetBookId() int32 {
 	if x != nil {
 		return x.BookId
 	}
 	return 0
 }
 
-func (x *CreateBookInUseRequest) GetReaderId() int32 {
+func (x *BookInUseIdRequest) GetReaderId() int32 {
 	if x != nil {
 		return x.ReaderId
 	}
 	return 0
 }
 
-type RentBookRequest struct {
+type RentOrReturnBookRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
@@ -603,20 +603,20 @@ type RentBookRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *RentBookRequest) Reset() {
-	*x = RentBookRequest{}
+func (x *RentOrReturnBookRequest) Reset() {
+	*x = RentOrReturnBookRequest{}
 	mi := &file_library_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *RentBookRequest) String() string {
+func (x *RentOrReturnBookRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*RentBookRequest) ProtoMessage() {}
+func (*RentOrReturnBookRequest) ProtoMessage() {}
 
-func (x *RentBookRequest) ProtoReflect() protoreflect.Message {
+func (x *RentOrReturnBookRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_library_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -628,71 +628,19 @@ func (x *RentBookRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RentBookRequest.ProtoReflect.Descriptor instead.
-func (*RentBookRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use RentOrReturnBookRequest.ProtoReflect.Descriptor instead.
+func (*RentOrReturnBookRequest) Descriptor() ([]byte, []int) {
 	return file_library_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *RentBookRequest) GetName() string {
+func (x *RentOrReturnBookRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *RentBookRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
-	}
-	return ""
-}
-
-type ReturnBookRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ReturnBookRequest) Reset() {
-	*x = ReturnBookRequest{}
-	mi := &file_library_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ReturnBookRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReturnBookRequest) ProtoMessage() {}
-
-func (x *ReturnBookRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_library_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReturnBookRequest.ProtoReflect.Descriptor instead.
-func (*ReturnBookRequest) Descriptor() ([]byte, []int) {
-	return file_library_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *ReturnBookRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *ReturnBookRequest) GetTitle() string {
+func (x *RentOrReturnBookRequest) GetTitle() string {
 	if x != nil {
 		return x.Title
 	}
@@ -708,7 +656,7 @@ type CountResponse struct {
 
 func (x *CountResponse) Reset() {
 	*x = CountResponse{}
-	mi := &file_library_proto_msgTypes[13]
+	mi := &file_library_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -720,7 +668,7 @@ func (x *CountResponse) String() string {
 func (*CountResponse) ProtoMessage() {}
 
 func (x *CountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_library_proto_msgTypes[13]
+	mi := &file_library_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -733,7 +681,7 @@ func (x *CountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CountResponse.ProtoReflect.Descriptor instead.
 func (*CountResponse) Descriptor() ([]byte, []int) {
-	return file_library_proto_rawDescGZIP(), []int{13}
+	return file_library_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CountResponse) GetCount() int32 {
@@ -752,7 +700,7 @@ type IdResponse struct {
 
 func (x *IdResponse) Reset() {
 	*x = IdResponse{}
-	mi := &file_library_proto_msgTypes[14]
+	mi := &file_library_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -764,7 +712,7 @@ func (x *IdResponse) String() string {
 func (*IdResponse) ProtoMessage() {}
 
 func (x *IdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_library_proto_msgTypes[14]
+	mi := &file_library_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -777,7 +725,7 @@ func (x *IdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdResponse.ProtoReflect.Descriptor instead.
 func (*IdResponse) Descriptor() ([]byte, []int) {
-	return file_library_proto_rawDescGZIP(), []int{14}
+	return file_library_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *IdResponse) GetId() int32 {
@@ -796,7 +744,7 @@ type MessageResponse struct {
 
 func (x *MessageResponse) Reset() {
 	*x = MessageResponse{}
-	mi := &file_library_proto_msgTypes[15]
+	mi := &file_library_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -808,7 +756,7 @@ func (x *MessageResponse) String() string {
 func (*MessageResponse) ProtoMessage() {}
 
 func (x *MessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_library_proto_msgTypes[15]
+	mi := &file_library_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -821,7 +769,7 @@ func (x *MessageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageResponse.ProtoReflect.Descriptor instead.
 func (*MessageResponse) Descriptor() ([]byte, []int) {
-	return file_library_proto_rawDescGZIP(), []int{15}
+	return file_library_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *MessageResponse) GetMessage() string {
@@ -840,7 +788,7 @@ type BooksResponse struct {
 
 func (x *BooksResponse) Reset() {
 	*x = BooksResponse{}
-	mi := &file_library_proto_msgTypes[16]
+	mi := &file_library_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -852,7 +800,7 @@ func (x *BooksResponse) String() string {
 func (*BooksResponse) ProtoMessage() {}
 
 func (x *BooksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_library_proto_msgTypes[16]
+	mi := &file_library_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -865,7 +813,7 @@ func (x *BooksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksResponse.ProtoReflect.Descriptor instead.
 func (*BooksResponse) Descriptor() ([]byte, []int) {
-	return file_library_proto_rawDescGZIP(), []int{16}
+	return file_library_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *BooksResponse) GetBooks() []*Book {
@@ -884,7 +832,7 @@ type ReadersResponse struct {
 
 func (x *ReadersResponse) Reset() {
 	*x = ReadersResponse{}
-	mi := &file_library_proto_msgTypes[17]
+	mi := &file_library_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -896,7 +844,7 @@ func (x *ReadersResponse) String() string {
 func (*ReadersResponse) ProtoMessage() {}
 
 func (x *ReadersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_library_proto_msgTypes[17]
+	mi := &file_library_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -909,7 +857,7 @@ func (x *ReadersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadersResponse.ProtoReflect.Descriptor instead.
 func (*ReadersResponse) Descriptor() ([]byte, []int) {
-	return file_library_proto_rawDescGZIP(), []int{17}
+	return file_library_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ReadersResponse) GetReaders() []*Reader {
@@ -928,7 +876,7 @@ type BooksInUseResponse struct {
 
 func (x *BooksInUseResponse) Reset() {
 	*x = BooksInUseResponse{}
-	mi := &file_library_proto_msgTypes[18]
+	mi := &file_library_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -940,7 +888,7 @@ func (x *BooksInUseResponse) String() string {
 func (*BooksInUseResponse) ProtoMessage() {}
 
 func (x *BooksInUseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_library_proto_msgTypes[18]
+	mi := &file_library_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -953,7 +901,7 @@ func (x *BooksInUseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksInUseResponse.ProtoReflect.Descriptor instead.
 func (*BooksInUseResponse) Descriptor() ([]byte, []int) {
-	return file_library_proto_rawDescGZIP(), []int{18}
+	return file_library_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *BooksInUseResponse) GetBooksInUse() []*BookInUse {
@@ -972,7 +920,7 @@ type ReaderIdsResponse struct {
 
 func (x *ReaderIdsResponse) Reset() {
 	*x = ReaderIdsResponse{}
-	mi := &file_library_proto_msgTypes[19]
+	mi := &file_library_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -984,7 +932,7 @@ func (x *ReaderIdsResponse) String() string {
 func (*ReaderIdsResponse) ProtoMessage() {}
 
 func (x *ReaderIdsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_library_proto_msgTypes[19]
+	mi := &file_library_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -997,12 +945,64 @@ func (x *ReaderIdsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReaderIdsResponse.ProtoReflect.Descriptor instead.
 func (*ReaderIdsResponse) Descriptor() ([]byte, []int) {
-	return file_library_proto_rawDescGZIP(), []int{19}
+	return file_library_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ReaderIdsResponse) GetReaderIds() []int32 {
 	if x != nil {
 		return x.ReaderIds
+	}
+	return nil
+}
+
+type ReadersBooksResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OkBooks       []*BookInUse           `protobuf:"bytes,1,rep,name=ok_books,json=okBooks,proto3" json:"ok_books,omitempty"`
+	BadBooks      []*BookInUse           `protobuf:"bytes,2,rep,name=bad_books,json=badBooks,proto3" json:"bad_books,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReadersBooksResponse) Reset() {
+	*x = ReadersBooksResponse{}
+	mi := &file_library_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadersBooksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadersBooksResponse) ProtoMessage() {}
+
+func (x *ReadersBooksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_library_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadersBooksResponse.ProtoReflect.Descriptor instead.
+func (*ReadersBooksResponse) Descriptor() ([]byte, []int) {
+	return file_library_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ReadersBooksResponse) GetOkBooks() []*BookInUse {
+	if x != nil {
+		return x.OkBooks
+	}
+	return nil
+}
+
+func (x *ReadersBooksResponse) GetBadBooks() []*BookInUse {
+	if x != nil {
+		return x.BadBooks
 	}
 	return nil
 }
@@ -1042,14 +1042,11 @@ const file_library_proto_rawDesc = "" +
 	"\x11CreateBookRequest\x12!\n" +
 	"\x04book\x18\x01 \x01(\v2\r.library.BookR\x04book\">\n" +
 	"\x13CreateReaderRequest\x12'\n" +
-	"\x06reader\x18\x01 \x01(\v2\x0f.library.ReaderR\x06reader\"N\n" +
-	"\x16CreateBookInUseRequest\x12\x17\n" +
+	"\x06reader\x18\x01 \x01(\v2\x0f.library.ReaderR\x06reader\"J\n" +
+	"\x12BookInUseIdRequest\x12\x17\n" +
 	"\abook_id\x18\x01 \x01(\x05R\x06bookId\x12\x1b\n" +
-	"\treader_id\x18\x02 \x01(\x05R\breaderId\";\n" +
-	"\x0fRentBookRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\"=\n" +
-	"\x11ReturnBookRequest\x12\x12\n" +
+	"\treader_id\x18\x02 \x01(\x05R\breaderId\"C\n" +
+	"\x17RentOrReturnBookRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\"%\n" +
 	"\rCountResponse\x12\x14\n" +
@@ -1068,7 +1065,10 @@ const file_library_proto_rawDesc = "" +
 	"booksInUse\"2\n" +
 	"\x11ReaderIdsResponse\x12\x1d\n" +
 	"\n" +
-	"reader_ids\x18\x01 \x03(\x05R\treaderIds2\xb9\f\n" +
+	"reader_ids\x18\x01 \x03(\x05R\treaderIds\"v\n" +
+	"\x14ReadersBooksResponse\x12-\n" +
+	"\bok_books\x18\x01 \x03(\v2\x12.library.BookInUseR\aokBooks\x12/\n" +
+	"\tbad_books\x18\x02 \x03(\v2\x12.library.BookInUseR\bbadBooks2\x99\r\n" +
 	"\aLibrary\x12=\n" +
 	"\vGetAllBooks\x12\x16.google.protobuf.Empty\x1a\x16.library.BooksResponse\x12:\n" +
 	"\x0eGetBookByTitle\x12\x19.library.BookTitleRequest\x1a\r.library.Book\x12B\n" +
@@ -1085,15 +1085,16 @@ const file_library_proto_rawDesc = "" +
 	"\x11GetReaderIdByName\x12\x1a.library.ReaderNameRequest\x1a\x13.library.IdResponse\x12F\n" +
 	"\fCreateReader\x12\x1c.library.CreateReaderRequest\x1a\x18.library.MessageResponse\x12B\n" +
 	"\fDeleteReader\x12\x18.library.ReaderIdRequest\x1a\x18.library.MessageResponse\x12D\n" +
-	"\x17UpdateReaderContactInfo\x12\x0f.library.Reader\x1a\x18.library.MessageResponse\x12L\n" +
-	"\x0fCreateBookInUse\x12\x1f.library.CreateBookInUseRequest\x1a\x18.library.MessageResponse\x12G\n" +
+	"\x17UpdateReaderContactInfo\x12\x0f.library.Reader\x1a\x18.library.MessageResponse\x12H\n" +
+	"\x0fCreateBookInUse\x12\x1b.library.BookInUseIdRequest\x1a\x18.library.MessageResponse\x12G\n" +
 	"\x10GetAllBooksInUse\x12\x16.google.protobuf.Empty\x1a\x1b.library.BooksInUseResponse\x12L\n" +
 	"\x18CountBookInUseByReaderId\x12\x18.library.ReaderIdRequest\x1a\x16.library.CountResponse\x12P\n" +
-	"\x17GetBooksInUseByReaderId\x12\x18.library.ReaderIdRequest\x1a\x1b.library.BooksInUseResponse\x12L\n" +
-	"\x0fDeleteBookInUse\x12\x1f.library.CreateBookInUseRequest\x1a\x18.library.MessageResponse\x12R\n" +
-	"\x1cRentBookByTitleAndReaderName\x12\x18.library.RentBookRequest\x1a\x18.library.MessageResponse\x12V\n" +
-	"\x1eReturnBookByTitleAndReaderName\x12\x1a.library.ReturnBookRequest\x1a\x18.library.MessageResponse\x12K\n" +
-	"\x15GetReadersIdsByBookId\x12\x16.library.BookIdRequest\x1a\x1a.library.ReaderIdsResponseB\fZ\n" +
+	"\x17GetBooksInUseByReaderId\x12\x18.library.ReaderIdRequest\x1a\x1b.library.BooksInUseResponse\x12H\n" +
+	"\x0fDeleteBookInUse\x12\x1b.library.BookInUseIdRequest\x1a\x18.library.MessageResponse\x12Z\n" +
+	"\x1cRentBookByTitleAndReaderName\x12 .library.RentOrReturnBookRequest\x1a\x18.library.MessageResponse\x12\\\n" +
+	"\x1eReturnBookByTitleAndReaderName\x12 .library.RentOrReturnBookRequest\x1a\x18.library.MessageResponse\x12K\n" +
+	"\x15GetReadersIdsByBookId\x12\x16.library.BookIdRequest\x1a\x1a.library.ReaderIdsResponse\x12X\n" +
+	"\x1bGetReaderBooksSepGoodAndBad\x12\x1a.library.ReaderNameRequest\x1a\x1d.library.ReadersBooksResponseB\fZ\n" +
 	"/librarypbb\x06proto3"
 
 var (
@@ -1110,28 +1111,28 @@ func file_library_proto_rawDescGZIP() []byte {
 
 var file_library_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_library_proto_goTypes = []any{
-	(*Book)(nil),                   // 0: library.Book
-	(*Reader)(nil),                 // 1: library.Reader
-	(*BookInUse)(nil),              // 2: library.BookInUse
-	(*Error)(nil),                  // 3: library.Error
-	(*BookIdRequest)(nil),          // 4: library.BookIdRequest
-	(*BookTitleRequest)(nil),       // 5: library.BookTitleRequest
-	(*ReaderIdRequest)(nil),        // 6: library.ReaderIdRequest
-	(*ReaderNameRequest)(nil),      // 7: library.ReaderNameRequest
-	(*CreateBookRequest)(nil),      // 8: library.CreateBookRequest
-	(*CreateReaderRequest)(nil),    // 9: library.CreateReaderRequest
-	(*CreateBookInUseRequest)(nil), // 10: library.CreateBookInUseRequest
-	(*RentBookRequest)(nil),        // 11: library.RentBookRequest
-	(*ReturnBookRequest)(nil),      // 12: library.ReturnBookRequest
-	(*CountResponse)(nil),          // 13: library.CountResponse
-	(*IdResponse)(nil),             // 14: library.IdResponse
-	(*MessageResponse)(nil),        // 15: library.MessageResponse
-	(*BooksResponse)(nil),          // 16: library.BooksResponse
-	(*ReadersResponse)(nil),        // 17: library.ReadersResponse
-	(*BooksInUseResponse)(nil),     // 18: library.BooksInUseResponse
-	(*ReaderIdsResponse)(nil),      // 19: library.ReaderIdsResponse
-	(*timestamppb.Timestamp)(nil),  // 20: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),          // 21: google.protobuf.Empty
+	(*Book)(nil),                    // 0: library.Book
+	(*Reader)(nil),                  // 1: library.Reader
+	(*BookInUse)(nil),               // 2: library.BookInUse
+	(*Error)(nil),                   // 3: library.Error
+	(*BookIdRequest)(nil),           // 4: library.BookIdRequest
+	(*BookTitleRequest)(nil),        // 5: library.BookTitleRequest
+	(*ReaderIdRequest)(nil),         // 6: library.ReaderIdRequest
+	(*ReaderNameRequest)(nil),       // 7: library.ReaderNameRequest
+	(*CreateBookRequest)(nil),       // 8: library.CreateBookRequest
+	(*CreateReaderRequest)(nil),     // 9: library.CreateReaderRequest
+	(*BookInUseIdRequest)(nil),      // 10: library.BookInUseIdRequest
+	(*RentOrReturnBookRequest)(nil), // 11: library.RentOrReturnBookRequest
+	(*CountResponse)(nil),           // 12: library.CountResponse
+	(*IdResponse)(nil),              // 13: library.IdResponse
+	(*MessageResponse)(nil),         // 14: library.MessageResponse
+	(*BooksResponse)(nil),           // 15: library.BooksResponse
+	(*ReadersResponse)(nil),         // 16: library.ReadersResponse
+	(*BooksInUseResponse)(nil),      // 17: library.BooksInUseResponse
+	(*ReaderIdsResponse)(nil),       // 18: library.ReaderIdsResponse
+	(*ReadersBooksResponse)(nil),    // 19: library.ReadersBooksResponse
+	(*timestamppb.Timestamp)(nil),   // 20: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),           // 21: google.protobuf.Empty
 }
 var file_library_proto_depIdxs = []int32{
 	20, // 0: library.Book.issue:type_name -> google.protobuf.Timestamp
@@ -1143,55 +1144,59 @@ var file_library_proto_depIdxs = []int32{
 	0,  // 6: library.BooksResponse.books:type_name -> library.Book
 	1,  // 7: library.ReadersResponse.readers:type_name -> library.Reader
 	2,  // 8: library.BooksInUseResponse.books_in_use:type_name -> library.BookInUse
-	21, // 9: library.Library.GetAllBooks:input_type -> google.protobuf.Empty
-	5,  // 10: library.Library.GetBookByTitle:input_type -> library.BookTitleRequest
-	5,  // 11: library.Library.GetBookIdByTitle:input_type -> library.BookTitleRequest
-	4,  // 12: library.Library.GetBookByID:input_type -> library.BookIdRequest
-	8,  // 13: library.Library.CreateBook:input_type -> library.CreateBookRequest
-	4,  // 14: library.Library.DeleteBook:input_type -> library.BookIdRequest
-	4,  // 15: library.Library.CheckCopiesOfBookByID:input_type -> library.BookIdRequest
-	4,  // 16: library.Library.SubtractCopyOfBookById:input_type -> library.BookIdRequest
-	4,  // 17: library.Library.AddCopyOfBookById:input_type -> library.BookIdRequest
-	21, // 18: library.Library.GetAllReaders:input_type -> google.protobuf.Empty
-	7,  // 19: library.Library.GetReaderIdByName:input_type -> library.ReaderNameRequest
-	9,  // 20: library.Library.CreateReader:input_type -> library.CreateReaderRequest
-	6,  // 21: library.Library.DeleteReader:input_type -> library.ReaderIdRequest
-	1,  // 22: library.Library.UpdateReaderContactInfo:input_type -> library.Reader
-	10, // 23: library.Library.CreateBookInUse:input_type -> library.CreateBookInUseRequest
-	21, // 24: library.Library.GetAllBooksInUse:input_type -> google.protobuf.Empty
-	6,  // 25: library.Library.CountBookInUseByReaderId:input_type -> library.ReaderIdRequest
-	6,  // 26: library.Library.GetBooksInUseByReaderId:input_type -> library.ReaderIdRequest
-	10, // 27: library.Library.DeleteBookInUse:input_type -> library.CreateBookInUseRequest
-	11, // 28: library.Library.RentBookByTitleAndReaderName:input_type -> library.RentBookRequest
-	12, // 29: library.Library.ReturnBookByTitleAndReaderName:input_type -> library.ReturnBookRequest
-	4,  // 30: library.Library.GetReadersIdsByBookId:input_type -> library.BookIdRequest
-	16, // 31: library.Library.GetAllBooks:output_type -> library.BooksResponse
-	0,  // 32: library.Library.GetBookByTitle:output_type -> library.Book
-	14, // 33: library.Library.GetBookIdByTitle:output_type -> library.IdResponse
-	0,  // 34: library.Library.GetBookByID:output_type -> library.Book
-	15, // 35: library.Library.CreateBook:output_type -> library.MessageResponse
-	15, // 36: library.Library.DeleteBook:output_type -> library.MessageResponse
-	15, // 37: library.Library.CheckCopiesOfBookByID:output_type -> library.MessageResponse
-	15, // 38: library.Library.SubtractCopyOfBookById:output_type -> library.MessageResponse
-	15, // 39: library.Library.AddCopyOfBookById:output_type -> library.MessageResponse
-	17, // 40: library.Library.GetAllReaders:output_type -> library.ReadersResponse
-	14, // 41: library.Library.GetReaderIdByName:output_type -> library.IdResponse
-	15, // 42: library.Library.CreateReader:output_type -> library.MessageResponse
-	15, // 43: library.Library.DeleteReader:output_type -> library.MessageResponse
-	15, // 44: library.Library.UpdateReaderContactInfo:output_type -> library.MessageResponse
-	15, // 45: library.Library.CreateBookInUse:output_type -> library.MessageResponse
-	18, // 46: library.Library.GetAllBooksInUse:output_type -> library.BooksInUseResponse
-	13, // 47: library.Library.CountBookInUseByReaderId:output_type -> library.CountResponse
-	18, // 48: library.Library.GetBooksInUseByReaderId:output_type -> library.BooksInUseResponse
-	15, // 49: library.Library.DeleteBookInUse:output_type -> library.MessageResponse
-	15, // 50: library.Library.RentBookByTitleAndReaderName:output_type -> library.MessageResponse
-	15, // 51: library.Library.ReturnBookByTitleAndReaderName:output_type -> library.MessageResponse
-	19, // 52: library.Library.GetReadersIdsByBookId:output_type -> library.ReaderIdsResponse
-	31, // [31:53] is the sub-list for method output_type
-	9,  // [9:31] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	2,  // 9: library.ReadersBooksResponse.ok_books:type_name -> library.BookInUse
+	2,  // 10: library.ReadersBooksResponse.bad_books:type_name -> library.BookInUse
+	21, // 11: library.Library.GetAllBooks:input_type -> google.protobuf.Empty
+	5,  // 12: library.Library.GetBookByTitle:input_type -> library.BookTitleRequest
+	5,  // 13: library.Library.GetBookIdByTitle:input_type -> library.BookTitleRequest
+	4,  // 14: library.Library.GetBookByID:input_type -> library.BookIdRequest
+	8,  // 15: library.Library.CreateBook:input_type -> library.CreateBookRequest
+	4,  // 16: library.Library.DeleteBook:input_type -> library.BookIdRequest
+	4,  // 17: library.Library.CheckCopiesOfBookByID:input_type -> library.BookIdRequest
+	4,  // 18: library.Library.SubtractCopyOfBookById:input_type -> library.BookIdRequest
+	4,  // 19: library.Library.AddCopyOfBookById:input_type -> library.BookIdRequest
+	21, // 20: library.Library.GetAllReaders:input_type -> google.protobuf.Empty
+	7,  // 21: library.Library.GetReaderIdByName:input_type -> library.ReaderNameRequest
+	9,  // 22: library.Library.CreateReader:input_type -> library.CreateReaderRequest
+	6,  // 23: library.Library.DeleteReader:input_type -> library.ReaderIdRequest
+	1,  // 24: library.Library.UpdateReaderContactInfo:input_type -> library.Reader
+	10, // 25: library.Library.CreateBookInUse:input_type -> library.BookInUseIdRequest
+	21, // 26: library.Library.GetAllBooksInUse:input_type -> google.protobuf.Empty
+	6,  // 27: library.Library.CountBookInUseByReaderId:input_type -> library.ReaderIdRequest
+	6,  // 28: library.Library.GetBooksInUseByReaderId:input_type -> library.ReaderIdRequest
+	10, // 29: library.Library.DeleteBookInUse:input_type -> library.BookInUseIdRequest
+	11, // 30: library.Library.RentBookByTitleAndReaderName:input_type -> library.RentOrReturnBookRequest
+	11, // 31: library.Library.ReturnBookByTitleAndReaderName:input_type -> library.RentOrReturnBookRequest
+	4,  // 32: library.Library.GetReadersIdsByBookId:input_type -> library.BookIdRequest
+	7,  // 33: library.Library.GetReaderBooksSepGoodAndBad:input_type -> library.ReaderNameRequest
+	15, // 34: library.Library.GetAllBooks:output_type -> library.BooksResponse
+	0,  // 35: library.Library.GetBookByTitle:output_type -> library.Book
+	13, // 36: library.Library.GetBookIdByTitle:output_type -> library.IdResponse
+	0,  // 37: library.Library.GetBookByID:output_type -> library.Book
+	14, // 38: library.Library.CreateBook:output_type -> library.MessageResponse
+	14, // 39: library.Library.DeleteBook:output_type -> library.MessageResponse
+	14, // 40: library.Library.CheckCopiesOfBookByID:output_type -> library.MessageResponse
+	14, // 41: library.Library.SubtractCopyOfBookById:output_type -> library.MessageResponse
+	14, // 42: library.Library.AddCopyOfBookById:output_type -> library.MessageResponse
+	16, // 43: library.Library.GetAllReaders:output_type -> library.ReadersResponse
+	13, // 44: library.Library.GetReaderIdByName:output_type -> library.IdResponse
+	14, // 45: library.Library.CreateReader:output_type -> library.MessageResponse
+	14, // 46: library.Library.DeleteReader:output_type -> library.MessageResponse
+	14, // 47: library.Library.UpdateReaderContactInfo:output_type -> library.MessageResponse
+	14, // 48: library.Library.CreateBookInUse:output_type -> library.MessageResponse
+	17, // 49: library.Library.GetAllBooksInUse:output_type -> library.BooksInUseResponse
+	12, // 50: library.Library.CountBookInUseByReaderId:output_type -> library.CountResponse
+	17, // 51: library.Library.GetBooksInUseByReaderId:output_type -> library.BooksInUseResponse
+	14, // 52: library.Library.DeleteBookInUse:output_type -> library.MessageResponse
+	14, // 53: library.Library.RentBookByTitleAndReaderName:output_type -> library.MessageResponse
+	14, // 54: library.Library.ReturnBookByTitleAndReaderName:output_type -> library.MessageResponse
+	18, // 55: library.Library.GetReadersIdsByBookId:output_type -> library.ReaderIdsResponse
+	19, // 56: library.Library.GetReaderBooksSepGoodAndBad:output_type -> library.ReadersBooksResponse
+	34, // [34:57] is the sub-list for method output_type
+	11, // [11:34] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_library_proto_init() }

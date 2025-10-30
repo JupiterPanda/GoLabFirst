@@ -9,9 +9,9 @@ type Handler struct {
 	useCase UseCase
 }
 
-func NewHandler(useCase UseCase) *Handler {
-	return &Handler{useCase: useCase}
-}
+//func NewHandler(useCase UseCase) *Handler {
+//	return &Handler{useCase: useCase}
+//}
 
 type UseCase interface {
 	GetReaderBooksSepGoodAndBad(ctx context.Context, name string) ([]models.BookInUse, []models.BookInUse, error)
@@ -28,7 +28,7 @@ type UseCase interface {
 	SubtractCopyOfBookById(ctx context.Context, id int) error
 	AddCopyOfBookById(ctx context.Context, id int) error
 
-	CreateBookInUse(ctx context.Context, bookInUse models.BookInUse, readerId int, bookId int) error
+	CreateBookInUse(ctx context.Context, readerId int, bookId int) error
 	GetAllBooksInUse(ctx context.Context) ([]models.BookInUse, error)
 	CountBookInUseByReaderId(ctx context.Context, readerId int) (int, error)
 	GetReadersIdsByBookId(ctx context.Context, bookId int) ([]int, error)

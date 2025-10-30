@@ -40,7 +40,6 @@ func (s *GRPCServer) GetReaderIdByName(ctx context.Context, req *librarypb.Reade
 
 func (s *GRPCServer) CreateReader(ctx context.Context, req *librarypb.CreateReaderRequest) (*librarypb.MessageResponse, error) {
 	reader := models.Reader{
-		ID:          int(req.Reader.ID),
 		Name:        req.Reader.Name,
 		PhoneNumber: req.Reader.PhoneNumber,
 		Address:     req.Reader.Address,
@@ -50,7 +49,7 @@ func (s *GRPCServer) CreateReader(ctx context.Context, req *librarypb.CreateRead
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: ("Reader created")}
+	res := &librarypb.MessageResponse{Message: "Reader created"}
 	return res, nil
 }
 
@@ -59,7 +58,7 @@ func (s *GRPCServer) DeleteReader(ctx context.Context, req *librarypb.ReaderIdRe
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: ("Reader deleted")}
+	res := &librarypb.MessageResponse{Message: "Reader deleted"}
 	return res, nil
 }
 
@@ -69,6 +68,6 @@ func (s *GRPCServer) UpdateReaderContactInfo(ctx context.Context, req *librarypb
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: ("Reader info updated")}
+	res := &librarypb.MessageResponse{Message: "Reader info updated"}
 	return res, nil
 }
