@@ -12,6 +12,10 @@ type UseCase struct {
 	bookInUseService bookInUseService
 }
 
+func NewUseCase(bookService bookService, readerService readerService, bookInUseService bookInUseService) *UseCase {
+	return &UseCase{bookService, readerService, bookInUseService}
+}
+
 type bookService interface {
 	GetByTitle(ctx context.Context, title string) (models.Book, error)
 	GetAll(ctx context.Context) ([]models.Book, error)
@@ -39,8 +43,4 @@ type bookInUseService interface {
 	GetReadersIdsByBookId(ctx context.Context, bookId int) ([]int, error)
 	GetBooksInUseByReaderId(ctx context.Context, readerId int) (map[int]time.Time, error)
 	CountByReaderId(ctx context.Context, readerId int) (int, error)
-}
-
-func NewUseCase(bookService bookService, readerService readerService, bookInUseService bookInUseService) *UseCase {
-	return &UseCase{bookService, readerService, bookInUseService}
 }

@@ -24,7 +24,7 @@ func (r *Repository) Create(ctx context.Context, reader models.Reader) error {
 	_, err := r.db.Exec(ctx, query, reader.Name, reader.PhoneNumber, reader.Address, reader.DateOfBirth)
 	if err != nil {
 		// TODO Проверка на вставку дубликата.
-		return fmt.Errorf("[repo][Create] ошибка при запросе в БД: %w", err)
+		return fmt.Errorf("[repo][Create] ошибка при запросе в БД: %v", err)
 	}
 	return nil
 }

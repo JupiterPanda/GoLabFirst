@@ -28,8 +28,14 @@ func (u *UseCase) GetBookByID(ctx context.Context, id int) (models.Book, error) 
 
 // CreateBook Добавить новую книгу
 func (u *UseCase) CreateBook(ctx context.Context, book models.Book) error {
-	if book.Title == "" || book.Author == "" || book.Copies < 1 {
-		return errors.New("invalid book data")
+	if book.Title == "" {
+		return errors.New("title invalid book data")
+	}
+	if book.Copies < 1 {
+		return errors.New("copies invalid book data")
+	}
+	if book.Author == "" {
+		return errors.New("author invalid book data")
 	}
 	return u.bookService.Create(ctx, book)
 }

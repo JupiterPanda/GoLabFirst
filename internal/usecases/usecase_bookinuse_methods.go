@@ -7,7 +7,8 @@ import (
 )
 
 // CreateBookInUse добавляет в бд запись о новой книге у читателя
-func (u *UseCase) CreateBookInUse(ctx context.Context, bookInUse models.BookInUse, readerId int, bookId int) error {
+func (u *UseCase) CreateBookInUse(ctx context.Context, readerId int, bookId int) error {
+	var bookInUse models.BookInUse
 	bookInfo, err := u.bookService.GetByID(ctx, bookId)
 	if err != nil {
 		return fmt.Errorf("[useCase][CreateBookInUse] cannot get book by id: %w", err)

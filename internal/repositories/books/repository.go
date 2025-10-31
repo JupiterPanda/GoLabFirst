@@ -23,7 +23,6 @@ func (r *Repository) Create(ctx context.Context, book models.Book) error {
 	query := `INSERT INTO books (title, author, issue, copies) VALUES ($1, $2, $3, $4)`
 	_, err := r.db.Exec(ctx, query, book.Title, book.Author, book.Issue, book.Copies)
 	if err != nil {
-		// TODO Проверка на вставку дубликата.
 		return fmt.Errorf("[repo][Create] ошибка при запросе в БД: %w", err)
 	}
 	return nil

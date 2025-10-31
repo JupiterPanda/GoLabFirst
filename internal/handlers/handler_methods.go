@@ -211,8 +211,7 @@ func (h *Handler) CreateBookInUse(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 		return
 	}
-	var bookInUse models.BookInUse
-	err := h.useCase.CreateBookInUse(c.Request.Context(), bookInUse, input.ReaderId, input.BookID)
+	err := h.useCase.CreateBookInUse(c.Request.Context(), input.ReaderId, input.BookID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create book in use", "error": err.Error()})
 		return

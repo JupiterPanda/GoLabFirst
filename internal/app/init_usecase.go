@@ -1,7 +1,6 @@
 package app
 
 import (
-	"goproject/internal/handlers"
 	booksRepoPackage "goproject/internal/repositories/books"
 	booksInUseRepoPackage "goproject/internal/repositories/booksInUse"
 	readersRepoPackage "goproject/internal/repositories/readers"
@@ -13,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func initHandler(pool *pgxpool.Pool) *handlers.Handler {
+func initUseCase(pool *pgxpool.Pool) *usecases.UseCase {
 	// Репозитории
 	bookRepo := booksRepoPackage.NewRepo(pool)
 	readerRepo := readersRepoPackage.NewRepo(pool)
@@ -24,6 +23,5 @@ func initHandler(pool *pgxpool.Pool) *handlers.Handler {
 	readerService := readersServicePackage.NewService(readerRepo)
 	bookInUseService := booksInUseServicePackage.NewService(bookInUseRepo)
 
-	useCase := usecases.NewUseCase(bookService, readerService, bookInUseService)
-	return handlers.NewHandler(useCase)
+	return usecases.NewUseCase(bookService, readerService, bookInUseService)
 }
