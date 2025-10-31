@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/migrations/1_innit_database.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/migrations/2_seed_books.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/migrations/3_seed_readers.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/migrations/4_seed_readerbooks.up.sql" dialect="PostgreSQL" />
+  </component>
+</project>

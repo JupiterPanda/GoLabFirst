@@ -2,46 +2,46 @@ package app
 
 import (
 	"context"
-	"fmt"
+	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
-	"log"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"log"
+	"os"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 // Run инициализирует подключение к базе, применяет миграции и запускает приложение
 func Run() {
-	ctx := context.Background() // контекст с отменой и таймаутом можно передать сюда
+	ctx := context.Background()
 
-	// URL подключения к базе PostgreSQL на localhost с параметром sslmode=disable
-	dbUrl := "postgresql://postgres:qwerty@localhost:5432/postgres?sslmode=disable"
-
-	// Обработка и разбор конфигурации подключения для pgxpool
-	poolConfig, err := pgxpool.ParseConfig(dbUrl)
+	err := godotenv.Load()
 	if err != nil {
-		log.Printf("Unable to parse database config: %v", err) // Завершаем, если ошибка
+		log.Fatal("Error loading .env file")
 	}
-
-	poolConfig.MaxConns = 10 // Максимальное количество соединений в пуле
 
 	// Подключаемся к базе данных через пул соединений
-	dbpool, err := pgxpool.ConnectConfig(ctx, poolConfig)
+	pool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Printf("Unable to connect to database: %v", err) // Завершаем, если ошибка соединения
+		log.Fatalf("Unable to create connection pool: %v\n", err)
 	}
-	defer dbpool.Close() // Закрываем пул соединений при выходе
-
-	// Путь к папке с миграциями
-	migrationsPath := "migrations"
+	defer pool.Close()
 
 	// Запускаем миграции
-	err = migrator.Migrate(ctx, dbpool, migrationsPath)
+	err = migrator.Migrate(ctx, pool, constants.MigrationsPath)
 	if err != nil {
-		log.Printf("Migration failed: %v", err) // Завершаем, если миграции не применились
+		log.Fatalf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
 
-	fmt.Println("DB migrated")
+	// Инициируем handler
+	handler := initHandler(pool)
+	log.Println("Все типы и бд проинициализированы")
 
-	// Здесь можно инициализировать Gin и дальше работать с приложением через dbpool
-	// ...
+	// Инициируем роутер
+	router := initRouter(handler)
+	err = router.Run("localhost:8080")
+	if err != nil {
+		return
+	}
 }
