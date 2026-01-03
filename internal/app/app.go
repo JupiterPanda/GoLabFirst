@@ -7,13 +7,16 @@ import (
 	"goproject/internal/package/migrator"
 	"goproject/protos/gen/librarypb"
 	"net"
+	"net/http"
 
 	"log"
 	"os"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Run инициализирует подключение к базе, применяет миграции и запускает приложение
@@ -57,6 +60,28 @@ func Run() {
 
 	grpcServer := grpc.NewServer()
 	librarypb.RegisterLibraryServer(grpcServer, libgrpc.NewGRPCServer(initUseCase(pool)))
+
+	go func() {
+		mux := runtime.NewServeMux()
+
+		// endpoint gRPC-сервера (тот, что ты уже поднял)
+		grpcEndpoint := "localhost:8080"
+
+		// зарегистрировать HTTP-ручки для сервиса Library
+		if err := librarypb.RegisterLibraryHandlerFromEndpoint(
+			ctx,
+			mux,
+			grpcEndpoint,
+			[]grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		); err != nil {
+			log.Fatalf("failed to start HTTP gateway: %v", err)
+		}
+
+		log.Println("HTTP gateway listening on :8081")
+		if err := http.ListenAndServe(":8081", mux); err != nil {
+			log.Fatalf("failed to serve HTTP gateway: %v", err)
+		}
+	}()
 
 	log.Println("gRPC server listening on :8080")
 	if err := grpcServer.Serve(lis); err != nil {
