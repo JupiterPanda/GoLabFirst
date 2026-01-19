@@ -5,6 +5,7 @@ import (
 	"goproject/internal/delivery/libgrpc"
 	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
+	"goproject/protos/gen"
 	"goproject/protos/gen/librarypb"
 	"net"
 	"net/http"
@@ -68,7 +69,7 @@ func Run() {
 		grpcEndpoint := "localhost:8080"
 
 		// зарегистрировать HTTP-ручки для сервиса Library
-		if err := librarypb.RegisterLibraryHandlerFromEndpoint(
+		if err := gen.RegisterLibraryHandlerFromEndpoint(
 			ctx,
 			mux,
 			grpcEndpoint,

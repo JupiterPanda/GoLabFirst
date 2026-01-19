@@ -14,7 +14,10 @@ protoc -I . --go_out=./protos/gen --go-grpc_out=./protos/gen --proto_path=./prot
 protoc -I . --proto_path=./protos/proto --openapiv2_out=./protos/gen --openapiv2_opt=logtostderr=true library.proto
 
 ### Генерация из .proto файла grpc-gateway с ручными эндпоинтами
-protoc -I . --grpc-gateway_out ./gen/go --grpc-gateway_opt paths=source_relative your/service/v1/your_service.proto
+protoc -I . --proto_path=./protos/proto --grpc-gateway_out ./protos/gen --grpc-gateway_opt paths=source_relative library.proto
 
 ### Генерация из .proto файла OpenAPI
 protoc -I . --proto_path=./protos/proto --openapiv2_out ./protos/gen library.proto
+
+
+protoc -I . --proto_path=./protos/proto --grpc-gateway_out ./protos/gen --grpc-gateway_opt paths=source_relative,allow_delete_body=true library.proto
