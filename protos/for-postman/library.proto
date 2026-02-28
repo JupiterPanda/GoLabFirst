@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package library.v1;
+option go_package = "goproject/protos/gen";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message Book {
+int32 ID = 1;
+string title = 2;
+int32 copies = 3;
+string author = 4;
+google.protobuf.Timestamp issue = 5;
+}
+
+message Reader {
+int32 ID = 1;
+string name = 2;
+string phone_number = 3;
+string address = 4;
+google.protobuf.Timestamp date_of_birth = 5;
+}
+
+message BookInUse {
+Book book_info = 1;
+google.protobuf.Timestamp date_of_rent = 2;
+}
+
+message Error {
+string message = 1;
+string error = 2;
+}
+
+message BookIdRequest {
+int32 id = 1;
+}
+
+message BookTitleRequest {
+string title = 1;
+}
+
+message ReaderIdRequest {
+int32 reader_id = 1;
+}
+
+message ReaderNameRequest {
+string name = 1;
+}
+
+message CreateBookRequest {
+Book book = 1;
+}
+
+message CreateReaderRequest {
+Reader reader = 1;
+}
+
+message BookInUseIdRequest {
+int32 book_id = 1;
+int32 reader_id = 2;
+}
+
+message RentOrReturnBookRequest {
+string name = 1;
+string title = 2;
+}
+
+message CountResponse {
+int32 count = 1;
+}
+
+message IdResponse {
+int32 id = 1;
+}
+
+message MessageResponse {
+string message = 1;
+}
+
+message BooksResponse {
+repeated Book books = 1;
+}
+
+message ReadersResponse {
+repeated Reader readers = 1;
+}
+
+message BooksInUseResponse {
+repeated BookInUse books_in_use = 1;
+}
+
+message ReaderIdsResponse {
+repeated int32 reader_ids = 1;
+}
+
+message ReadersBooksResponse {
+repeated BookInUse ok_books = 1;
+repeated BookInUse bad_books = 2;
+}
+
+service Library {
+// Books
+rpc GetAllBooks(google.protobuf.Empty) returns (BooksResponse);
+rpc GetBookByTitle(BookTitleRequest) returns (Book);
+rpc GetBookIdByTitle(BookTitleRequest) returns (IdResponse);
+rpc GetBookByID(BookIdRequest) returns (Book);
+rpc CreateBook(CreateBookRequest) returns (MessageResponse);
+rpc DeleteBook(BookIdRequest) returns (MessageResponse);
+rpc CheckCopiesOfBookByID(BookIdRequest) returns (MessageResponse);
+rpc SubtractCopyOfBookById(BookIdRequest) returns (MessageResponse);
+rpc AddCopyOfBookById(BookIdRequest) returns (MessageResponse);
+
+// Readers
+rpc GetAllReaders(google.protobuf.Empty) returns (ReadersResponse);
+rpc GetReaderIdByName(ReaderNameRequest) returns (IdResponse);
+rpc CreateReader(CreateReaderRequest) returns (MessageResponse);
+rpc DeleteReader(ReaderIdRequest) returns (MessageResponse);
+rpc UpdateReaderContactInfo(Reader) returns (MessageResponse);
+
+// Rentals (InUse)
+rpc CreateBookInUse(BookInUseIdRequest) returns (MessageResponse);
+rpc GetAllBooksInUse(google.protobuf.Empty) returns (BooksInUseResponse);
+rpc CountBookInUseByReaderId(ReaderIdRequest) returns (CountResponse);
+rpc GetBooksInUseByReaderId(ReaderIdRequest) returns (BooksInUseResponse);
+rpc DeleteBookInUse(BookInUseIdRequest) returns (MessageResponse);
+rpc RentBookByTitleAndReaderName(RentOrReturnBookRequest) returns (MessageResponse);
+rpc ReturnBookByTitleAndReaderName(RentOrReturnBookRequest) returns (MessageResponse);
+rpc GetReadersIdsByBookId(BookIdRequest) returns (ReaderIdsResponse);
+rpc GetReaderBooksSepGoodAndBad(ReaderNameRequest) returns (ReadersBooksResponse);
+}
