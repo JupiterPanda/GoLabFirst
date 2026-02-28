@@ -70,6 +70,9 @@ func (s *GRPCServer) GetBookByID(ctx context.Context, req *librarypb.BookIdReque
 }
 
 func (s *GRPCServer) CreateBook(ctx context.Context, req *librarypb.CreateBookRequest) (*librarypb.MessageResponse, error) {
+	if req == nil || req.Book == nil {
+		return nil, fmt.Errorf("book is required")
+	}
 	fmt.Println(req.Book.Title)
 	book := models.Book{
 		Title:  req.Book.Title,
