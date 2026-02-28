@@ -2,12 +2,12 @@ package libgrpc
 
 import (
 	"goproject/internal/handlers"
-	"goproject/protos/gen/librarypb"
+	"goproject/protos/gen"
 )
 
 // GRPCServer реализует интерфейс LibraryServer из proto
 type GRPCServer struct {
-	librarypb.UnimplementedLibraryServer
+	gen.UnimplementedLibraryServer
 	useCase handlers.UseCase
 }
 

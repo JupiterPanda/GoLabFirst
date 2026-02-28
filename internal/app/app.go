@@ -6,7 +6,6 @@ import (
 	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
 	"goproject/protos/gen"
-	"goproject/protos/gen/librarypb"
 	"net"
 	"net/http"
 
@@ -60,7 +59,7 @@ func Run() {
 	}
 
 	grpcServer := grpc.NewServer()
-	librarypb.RegisterLibraryServer(grpcServer, libgrpc.NewGRPCServer(initUseCase(pool)))
+	gen.RegisterLibraryServer(grpcServer, libgrpc.NewGRPCServer(initUseCase(pool)))
 
 	go func() {
 		mux := runtime.NewServeMux()

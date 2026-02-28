@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package library.v1;
-option go_package = "github.com/JupiterPanda/GoLabFirst/protos/gen/librarypb";
+option go_package = "goproject/protos/gen";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -139,7 +139,7 @@ service Library {
   rpc DeleteBook(BookIdRequest) returns (MessageResponse) {
     option (google.api.http) = {
       delete: "/book"
-      body: "*"
+      body: "id"
     };
   }
 
@@ -188,7 +188,7 @@ service Library {
   rpc DeleteReader(ReaderIdRequest) returns (MessageResponse) {
     option (google.api.http) = {
       delete: "/reader"
-      body: "*"
+      body: "reader_id"
     };
   }
 
