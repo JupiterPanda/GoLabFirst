@@ -36,6 +36,7 @@ func Run() {
 	defer pool.Close()
 
 	// Запускаем миграции
+	// TODO: переехать на goose
 	err = migrator.Migrate(ctx, pool, constants.MigrationsPath)
 	if err != nil {
 		log.Fatalf("Migration failed: %v", err) // Завершаем, если миграции не применились
@@ -53,6 +54,7 @@ func Run() {
 			return
 		}*/
 
+	// TODO: вынести в .env файл все параметры (как минимум address)
 	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -64,6 +66,7 @@ func Run() {
 	go func() {
 		mux := runtime.NewServeMux()
 
+		// TODO: вынести в конфиг
 		// endpoint gRPC-сервера (тот, что ты уже поднял)
 		grpcEndpoint := "localhost:8080"
 
@@ -78,6 +81,7 @@ func Run() {
 		}
 
 		log.Println("HTTP gateway listening on :8081")
+		// TODO: вынести в конфиг
 		if err := http.ListenAndServe(":8081", mux); err != nil {
 			log.Fatalf("failed to serve HTTP gateway: %v", err)
 		}

@@ -9,6 +9,7 @@ type Handler struct {
 	useCase UseCase
 }
 
+// TODO: DELETE
 //func NewHandler(useCase UseCase) *Handler {
 //	return &Handler{useCase: useCase}
 //}
