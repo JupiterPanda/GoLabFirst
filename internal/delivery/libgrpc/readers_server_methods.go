@@ -3,21 +3,21 @@ package libgrpc
 import (
 	"context"
 	"goproject/internal/models"
-	"goproject/protos/gen/librarypb"
+	"goproject/protos/gen"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (s *GRPCServer) GetAllReaders(ctx context.Context, _ *emptypb.Empty) (*librarypb.ReadersResponse, error) {
+func (s *GRPCServer) GetAllReaders(ctx context.Context, _ *emptypb.Empty) (*gen.ReadersResponse, error) {
 	readers, err := s.useCase.GetAllReaders(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	res := &librarypb.ReadersResponse{}
+	res := &gen.ReadersResponse{}
 	for _, reader := range readers {
-		res.Readers = append(res.Readers, &librarypb.Reader{
+		res.Readers = append(res.Readers, &gen.Reader{
 			ID:          int32(reader.ID),
 			Name:        reader.Name,
 			PhoneNumber: reader.PhoneNumber,
@@ -29,16 +29,16 @@ func (s *GRPCServer) GetAllReaders(ctx context.Context, _ *emptypb.Empty) (*libr
 	return res, nil
 }
 
-func (s *GRPCServer) GetReaderIdByName(ctx context.Context, req *librarypb.ReaderNameRequest) (*librarypb.IdResponse, error) {
+func (s *GRPCServer) GetReaderIdByName(ctx context.Context, req *gen.ReaderNameRequest) (*gen.IdResponse, error) {
 	readerID, err := s.useCase.GetReaderIdByName(ctx, req.Name)
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.IdResponse{Id: int32(readerID)}
+	res := &gen.IdResponse{Id: int32(readerID)}
 	return res, nil
 }
 
-func (s *GRPCServer) CreateReader(ctx context.Context, req *librarypb.CreateReaderRequest) (*librarypb.MessageResponse, error) {
+func (s *GRPCServer) CreateReader(ctx context.Context, req *gen.CreateReaderRequest) (*gen.MessageResponse, error) {
 	reader := models.Reader{
 		Name:        req.Reader.Name,
 		PhoneNumber: req.Reader.PhoneNumber,
@@ -49,25 +49,25 @@ func (s *GRPCServer) CreateReader(ctx context.Context, req *librarypb.CreateRead
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: "Reader created"}
+	res := &gen.MessageResponse{Message: "Reader created"}
 	return res, nil
 }
 
-func (s *GRPCServer) DeleteReader(ctx context.Context, req *librarypb.ReaderIdRequest) (*librarypb.MessageResponse, error) {
+func (s *GRPCServer) DeleteReader(ctx context.Context, req *gen.ReaderIdRequest) (*gen.MessageResponse, error) {
 	err := s.useCase.DeleteReader(ctx, int(req.ReaderId))
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: "Reader deleted"}
+	res := &gen.MessageResponse{Message: "Reader deleted"}
 	return res, nil
 }
 
-func (s *GRPCServer) UpdateReaderContactInfo(ctx context.Context, req *librarypb.Reader) (*librarypb.MessageResponse, error) {
+func (s *GRPCServer) UpdateReaderContactInfo(ctx context.Context, req *gen.Reader) (*gen.MessageResponse, error) {
 
 	err := s.useCase.UpdateReaderContactInfo(ctx, int(req.ID), req.PhoneNumber, req.Address)
 	if err != nil {
 		return nil, err
 	}
-	res := &librarypb.MessageResponse{Message: "Reader info updated"}
+	res := &gen.MessageResponse{Message: "Reader info updated"}
 	return res, nil
 }

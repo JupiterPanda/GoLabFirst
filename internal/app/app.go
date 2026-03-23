@@ -5,7 +5,7 @@ import (
 	"goproject/internal/delivery/libgrpc"
 	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
-	"goproject/protos/gen/librarypb"
+	"goproject/protos/gen"
 	"net"
 	"net/http"
 
@@ -29,61 +29,45 @@ func Run() {
 	}
 
 	// Подключаемся к базе данных через пул соединений
-	pool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	pool, err := pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatalf("Unable to create connection pool: %v\n", err)
 	}
 	defer pool.Close()
 
 	// Запускаем миграции
+	// TODO: переехать на goose
 	err = migrator.Migrate(ctx, pool, constants.MigrationsPath)
 	if err != nil {
 		log.Fatalf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
 
-	/*	// Инициируем handler
-		useCase := initUseCase(pool)
-		handler := handlers.NewHandler(useCase)
-		log.Println("Все структуры, типы и бд проинициализированы")
-
-		// Инициируем роутер
-		router := initRouter(handler)
-		err = router.Run("localhost:8080")
-		if err != nil {
-			return
-		}*/
-
-	lis, err := net.Listen("tcp", ":8080")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	grpcServer := grpc.NewServer()
-	librarypb.RegisterLibraryServer(grpcServer, libgrpc.NewGRPCServer(initUseCase(pool)))
-
 	go func() {
 		mux := runtime.NewServeMux()
 
-		// endpoint gRPC-сервера (тот, что ты уже поднял)
-		grpcEndpoint := "localhost:8080"
-
-		// зарегистрировать HTTP-ручки для сервиса Library
-		if err := librarypb.RegisterLibraryHandlerFromEndpoint(
+		// Зарегистрировать HTTP-ручки для сервиса Library
+		if err := gen.RegisterLibraryHandlerFromEndpoint(
 			ctx,
 			mux,
-			grpcEndpoint,
+			os.Getenv("GPRC_SERVER_ENDPOINT"),
 			[]grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
 		); err != nil {
 			log.Fatalf("failed to start HTTP gateway: %v", err)
 		}
 
-		log.Println("HTTP gateway listening on :8081")
-		if err := http.ListenAndServe(":8081", mux); err != nil {
+		log.Println("HTTP gateway listening on ", os.Getenv("HTTP_SERVER_PORT"))
+		if err := http.ListenAndServe(os.Getenv("HTTP_SERVER_PORT"), mux); err != nil {
 			log.Fatalf("failed to serve HTTP gateway: %v", err)
 		}
 	}()
 
-	log.Println("gRPC server listening on :8080")
+	lis, err := net.Listen("tcp", os.Getenv("GPRC_SERVER_PORT"))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	gen.RegisterLibraryServer(grpcServer, libgrpc.NewGRPCServer(initUseCase(pool)))
+	log.Println("gRPC server listening on ", os.Getenv("GPRC_SERVER_PORT"))
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

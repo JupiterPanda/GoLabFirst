@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.0--rc2
-// source: library.proto
+// source: protos/proto/library.proto
 
-package librarypb
+package gen
 
 import (
 	context "context"
@@ -20,29 +20,29 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Library_GetAllBooks_FullMethodName                    = "/library.Library/GetAllBooks"
-	Library_GetBookByTitle_FullMethodName                 = "/library.Library/GetBookByTitle"
-	Library_GetBookIdByTitle_FullMethodName               = "/library.Library/GetBookIdByTitle"
-	Library_GetBookByID_FullMethodName                    = "/library.Library/GetBookByID"
-	Library_CreateBook_FullMethodName                     = "/library.Library/CreateBook"
-	Library_DeleteBook_FullMethodName                     = "/library.Library/DeleteBook"
-	Library_CheckCopiesOfBookByID_FullMethodName          = "/library.Library/CheckCopiesOfBookByID"
-	Library_SubtractCopyOfBookById_FullMethodName         = "/library.Library/SubtractCopyOfBookById"
-	Library_AddCopyOfBookById_FullMethodName              = "/library.Library/AddCopyOfBookById"
-	Library_GetAllReaders_FullMethodName                  = "/library.Library/GetAllReaders"
-	Library_GetReaderIdByName_FullMethodName              = "/library.Library/GetReaderIdByName"
-	Library_CreateReader_FullMethodName                   = "/library.Library/CreateReader"
-	Library_DeleteReader_FullMethodName                   = "/library.Library/DeleteReader"
-	Library_UpdateReaderContactInfo_FullMethodName        = "/library.Library/UpdateReaderContactInfo"
-	Library_CreateBookInUse_FullMethodName                = "/library.Library/CreateBookInUse"
-	Library_GetAllBooksInUse_FullMethodName               = "/library.Library/GetAllBooksInUse"
-	Library_CountBookInUseByReaderId_FullMethodName       = "/library.Library/CountBookInUseByReaderId"
-	Library_GetBooksInUseByReaderId_FullMethodName        = "/library.Library/GetBooksInUseByReaderId"
-	Library_DeleteBookInUse_FullMethodName                = "/library.Library/DeleteBookInUse"
-	Library_RentBookByTitleAndReaderName_FullMethodName   = "/library.Library/RentBookByTitleAndReaderName"
-	Library_ReturnBookByTitleAndReaderName_FullMethodName = "/library.Library/ReturnBookByTitleAndReaderName"
-	Library_GetReadersIdsByBookId_FullMethodName          = "/library.Library/GetReadersIdsByBookId"
-	Library_GetReaderBooksSepGoodAndBad_FullMethodName    = "/library.Library/GetReaderBooksSepGoodAndBad"
+	Library_GetAllBooks_FullMethodName                    = "/library.v1.Library/GetAllBooks"
+	Library_GetBookByTitle_FullMethodName                 = "/library.v1.Library/GetBookByTitle"
+	Library_GetBookIdByTitle_FullMethodName               = "/library.v1.Library/GetBookIdByTitle"
+	Library_GetBookByID_FullMethodName                    = "/library.v1.Library/GetBookByID"
+	Library_CreateBook_FullMethodName                     = "/library.v1.Library/CreateBook"
+	Library_DeleteBook_FullMethodName                     = "/library.v1.Library/DeleteBook"
+	Library_CheckCopiesOfBookByID_FullMethodName          = "/library.v1.Library/CheckCopiesOfBookByID"
+	Library_SubtractCopyOfBookById_FullMethodName         = "/library.v1.Library/SubtractCopyOfBookById"
+	Library_AddCopyOfBookById_FullMethodName              = "/library.v1.Library/AddCopyOfBookById"
+	Library_GetAllReaders_FullMethodName                  = "/library.v1.Library/GetAllReaders"
+	Library_GetReaderIdByName_FullMethodName              = "/library.v1.Library/GetReaderIdByName"
+	Library_CreateReader_FullMethodName                   = "/library.v1.Library/CreateReader"
+	Library_DeleteReader_FullMethodName                   = "/library.v1.Library/DeleteReader"
+	Library_UpdateReaderContactInfo_FullMethodName        = "/library.v1.Library/UpdateReaderContactInfo"
+	Library_CreateBookInUse_FullMethodName                = "/library.v1.Library/CreateBookInUse"
+	Library_GetAllBooksInUse_FullMethodName               = "/library.v1.Library/GetAllBooksInUse"
+	Library_CountBookInUseByReaderId_FullMethodName       = "/library.v1.Library/CountBookInUseByReaderId"
+	Library_GetBooksInUseByReaderId_FullMethodName        = "/library.v1.Library/GetBooksInUseByReaderId"
+	Library_DeleteBookInUse_FullMethodName                = "/library.v1.Library/DeleteBookInUse"
+	Library_RentBookByTitleAndReaderName_FullMethodName   = "/library.v1.Library/RentBookByTitleAndReaderName"
+	Library_ReturnBookByTitleAndReaderName_FullMethodName = "/library.v1.Library/ReturnBookByTitleAndReaderName"
+	Library_GetReadersIdsByBookId_FullMethodName          = "/library.v1.Library/GetReadersIdsByBookId"
+	Library_GetReaderBooksSepGoodAndBad_FullMethodName    = "/library.v1.Library/GetReaderBooksSepGoodAndBad"
 )
 
 // LibraryClient is the client API for Library service.
@@ -863,7 +863,7 @@ func _Library_GetReaderBooksSepGoodAndBad_Handler(srv interface{}, ctx context.C
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Library_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "library.Library",
+	ServiceName: "library.v1.Library",
 	HandlerType: (*LibraryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -960,5 +960,5 @@ var Library_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "library.proto",
+	Metadata: "protos/proto/library.proto",
 }

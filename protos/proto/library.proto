@@ -1,10 +1,11 @@
 syntax = "proto3";
 
-package library;
-option go_package = "/librarypb";
+package library.v1;
+option go_package = "goproject/protos/gen";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "protos/proto/annotations.proto";
 
 message Book {
   int32 ID = 1;
@@ -101,32 +102,163 @@ message ReadersBooksResponse {
 
 service Library {
   // Books
-  rpc GetAllBooks(google.protobuf.Empty) returns (BooksResponse);
-  rpc GetBookByTitle(BookTitleRequest) returns (Book);
-  rpc GetBookIdByTitle(BookTitleRequest) returns (IdResponse);
-  rpc GetBookByID(BookIdRequest) returns (Book);
-  rpc CreateBook(CreateBookRequest) returns (MessageResponse);
-  rpc DeleteBook(BookIdRequest) returns (MessageResponse);
-  rpc CheckCopiesOfBookByID(BookIdRequest) returns (MessageResponse);
-  rpc SubtractCopyOfBookById(BookIdRequest) returns (MessageResponse);
-  rpc AddCopyOfBookById(BookIdRequest) returns (MessageResponse);
+  rpc GetAllBooks(google.protobuf.Empty) returns (BooksResponse) {
+    option (google.api.http) = {
+      get: "/books"
+    };
+  }
+
+  rpc GetBookByTitle(BookTitleRequest) returns (Book) {
+    option (google.api.http) = {
+      post: "/book/title"
+      body: "*"
+    };
+  }
+
+  rpc GetBookIdByTitle(BookTitleRequest) returns (IdResponse) {
+    option (google.api.http) = {
+      post: "/book/id/title"
+      body: "*"
+    };
+  }
+
+  rpc GetBookByID(BookIdRequest) returns (Book) {
+    option (google.api.http) = {
+      post: "/book/id"
+      body: "*"
+    };
+  }
+
+  rpc CreateBook(CreateBookRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      post: "/book"
+      body: "*"
+    };
+  }
+
+  rpc DeleteBook(BookIdRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      delete: "/book"
+      body: "id"
+    };
+  }
+
+  rpc CheckCopiesOfBookByID(BookIdRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      post: "/book/check/id"
+      body: "*"
+    };
+  }
+
+  rpc SubtractCopyOfBookById(BookIdRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      patch: "/book/minus"
+      body: "*"
+    };
+  }
+
+  rpc AddCopyOfBookById(BookIdRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      patch: "/book/plus"
+      body: "*"
+    };
+  }
 
   // Readers
-  rpc GetAllReaders(google.protobuf.Empty) returns (ReadersResponse);
-  rpc GetReaderIdByName(ReaderNameRequest) returns (IdResponse);
-  rpc CreateReader(CreateReaderRequest) returns (MessageResponse);
-  rpc DeleteReader(ReaderIdRequest) returns (MessageResponse);
-  rpc UpdateReaderContactInfo(Reader) returns (MessageResponse);
+  rpc GetAllReaders(google.protobuf.Empty) returns (ReadersResponse) {
+    option (google.api.http) = {
+      get: "/readers"
+    };
+  }
+
+  rpc GetReaderIdByName(ReaderNameRequest) returns (IdResponse) {
+    option (google.api.http) = {
+      post: "/reader/id"
+      body: "name"
+    };
+  }
+
+  rpc CreateReader(CreateReaderRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      post: "/reader"
+      body: "*"
+    };
+  }
+
+  rpc DeleteReader(ReaderIdRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      delete: "/reader"
+      body: "reader_id"
+    };
+  }
+
+  rpc UpdateReaderContactInfo(Reader) returns (MessageResponse) {
+    option (google.api.http) = {
+      patch: "/reader/contact"
+      body: "*"
+    };
+  }
 
   // Rentals (InUse)
-  rpc CreateBookInUse(BookInUseIdRequest) returns (MessageResponse);
-  rpc GetAllBooksInUse(google.protobuf.Empty) returns (BooksInUseResponse);
-  rpc CountBookInUseByReaderId(ReaderIdRequest) returns (CountResponse);
-  rpc GetBooksInUseByReaderId(ReaderIdRequest) returns (BooksInUseResponse);
-  rpc DeleteBookInUse(BookInUseIdRequest) returns (MessageResponse);
+  rpc CreateBookInUse(BookInUseIdRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      post: "/reader/book"
+      body: "*"
+    };
+  }
 
-  rpc RentBookByTitleAndReaderName(RentOrReturnBookRequest) returns (MessageResponse);
-  rpc ReturnBookByTitleAndReaderName(RentOrReturnBookRequest) returns (MessageResponse);
-  rpc GetReadersIdsByBookId(BookIdRequest) returns (ReaderIdsResponse);
-  rpc GetReaderBooksSepGoodAndBad(ReaderNameRequest) returns (ReadersBooksResponse);
+  rpc GetAllBooksInUse(google.protobuf.Empty) returns (BooksInUseResponse) {
+    option (google.api.http) = {
+      get: "/reader/book"
+    };
+  }
+
+  rpc CountBookInUseByReaderId(ReaderIdRequest) returns (CountResponse) {
+    option (google.api.http) = {
+      post: "/reader/book/count"
+      body: "reader_id"
+    };
+  }
+
+  rpc GetBooksInUseByReaderId(ReaderIdRequest) returns (BooksInUseResponse) {
+    option (google.api.http) = {
+      post: "/reader/book/id"
+      body: "reader_id"
+    };
+  }
+
+  rpc DeleteBookInUse(BookInUseIdRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      delete: "/reader/book"
+      body: "*"
+    };
+  }
+
+  rpc RentBookByTitleAndReaderName(RentOrReturnBookRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      patch: "/rent"
+      body: "*"
+    };
+  }
+
+  rpc ReturnBookByTitleAndReaderName(RentOrReturnBookRequest) returns (MessageResponse) {
+    option (google.api.http) = {
+      patch: "/return"
+      body: "*"
+    };
+  }
+
+  rpc GetReadersIdsByBookId(BookIdRequest) returns (ReaderIdsResponse) {
+    option (google.api.http) = {
+      post: "/reader/id/book"
+      body: "id"
+    };
+  }
+
+  rpc GetReaderBooksSepGoodAndBad(ReaderNameRequest) returns (ReadersBooksResponse) {
+    option (google.api.http) = {
+      post: "/reader/books"
+      body: "name"
+    };
+  }
 }
