@@ -3,11 +3,13 @@ package app
 import (
 	"context"
 	"goproject/internal/delivery/libgrpc"
+	"goproject/internal/kafka"
 	constants "goproject/internal/package"
 	"goproject/internal/package/migrator"
 	"goproject/protos/gen"
 	"net"
 	"net/http"
+	"strings"
 
 	"log"
 	"os"
@@ -34,22 +36,40 @@ func Run() {
 		log.Fatalf("Unable to create connection pool: %v\n", err)
 	}
 	defer pool.Close()
+	useCases := initUseCase(pool)
 
 	// Запускаем миграции
-	// TODO: переехать на goose
 	err = migrator.Migrate(ctx, pool, constants.MigrationsPath)
 	if err != nil {
 		log.Fatalf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
 
+	consumer, err := kafka.NewConsumer(ctx, kafka.Config{
+		Brokers:  strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
+		Topic:    os.Getenv("KAFKA_TOPIC"),
+		GroupID:  os.Getenv("KAFKA_GROUP_ID"),
+		DLQTopic: os.Getenv("KAFKA_DLQ_TOPIC"),
+	}, useCases)
+	if err != nil {
+		log.Fatalf("failed to init kafka consumer: %v", err)
+	}
+	defer consumer.Close()
+
+	go func() {
+		if err := consumer.Run(ctx); err != nil {
+			log.Printf("kafka consumer exited with error: %v", err)
+		}
+	}()
+
+	// Запускаем сервер для обработки http пакетов
 	go func() {
 		mux := runtime.NewServeMux()
 
-		// Зарегистрировать HTTP-ручки для сервиса Library
+		// Регистрируем HTTP-ручки для сервиса Library
 		if err := gen.RegisterLibraryHandlerFromEndpoint(
 			ctx,
 			mux,
-			os.Getenv("GPRC_SERVER_ENDPOINT"),
+			os.Getenv("GRPC_SERVER_ENDPOINT"),
 			[]grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
 		); err != nil {
 			log.Fatalf("failed to start HTTP gateway: %v", err)
@@ -61,13 +81,14 @@ func Run() {
 		}
 	}()
 
-	lis, err := net.Listen("tcp", os.Getenv("GPRC_SERVER_PORT"))
+	// Запускаем сервер для обработки grpc пакетов
+	lis, err := net.Listen("tcp", os.Getenv("GRPC_SERVER_PORT"))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	gen.RegisterLibraryServer(grpcServer, libgrpc.NewGRPCServer(initUseCase(pool)))
-	log.Println("gRPC server listening on ", os.Getenv("GPRC_SERVER_PORT"))
+	gen.RegisterLibraryServer(grpcServer, libgrpc.NewGRPCServer(useCases))
+	log.Println("gRPC server listening on ", os.Getenv("GRPC_SERVER_PORT"))
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

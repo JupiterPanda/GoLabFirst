@@ -13,3 +13,9 @@ protoc -I . --go_out=./protos/gen --go-grpc_out=./protos/gen --proto_path=./prot
 
 ### Генерация из .proto файла grpc-gateway с ручными эндпоинтами
 protoc -I . --go_out=. --go_opt=module=goproject --go-grpc_out=. --go-grpc_opt=module=goproject --grpc-gateway_out=logtostderr=true,allow_delete_body=true:. --grpc-gateway_opt=module=goproject protos/proto/library.proto
+
+#### Команда для создания топика Kafka
+docker exec -it kafka /opt/kafka/bin/kafka-topics.sh --create --topic library.books --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+#### Команда для просмотра всех топиков Kafka
+docker exec -it kafka /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092

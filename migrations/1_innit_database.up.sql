@@ -1,5 +1,5 @@
 -- Создание таблиц по схемам
-
+-- +goose Up
 CREATE TABLE IF NOT EXISTS books (
     ID SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,

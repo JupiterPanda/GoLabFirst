@@ -2,43 +2,38 @@ package migrator
 
 import (
 	"context"
-	"fmt"
+	"database/sql"
 	"log"
-	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/pressly/goose/v3"
 )
 
+////go:embed migrations/*.sql
+//var embedMigrations embed.FS
+
 // Migrate запускает поочередно файлы из директории migrationsPath
-func Migrate(ctx context.Context, db *pgxpool.Pool, migrationsPath string) error {
-	// Считываем список файлов в папке миграций
-	files, err := os.ReadDir(migrationsPath)
-	if err != nil {
-		return err
+func Migrate(ctx context.Context, dbpool *pgxpool.Pool, migrationsPath string) error {
+
+	//var embedMigrations embed.FS
+	//goose.SetBaseFS(embedMigrations)
+	log.Println("starting migrations")
+	if err := goose.SetDialect(string(goose.DialectPostgres)); err != nil {
+		panic(err)
 	}
 
-	// Проходим по всем файлам и для каждого применяем миграцию
-	for _, file := range files {
-		if file.IsDir() { // Пропускаем директории
-			continue
-		}
-		filepath := migrationsPath + "/" + file.Name()
-
-		migrationBytes, err := os.ReadFile(filepath)
+	db := stdlib.OpenDBFromPool(dbpool)
+	defer func(db *sql.DB) {
+		err := db.Close()
 		if err != nil {
-			return err
+			log.Fatalf("Was NOT closed database connection: %v", err)
 		}
-		migration := string(migrationBytes)
-
-		log.Printf("Applying migration: %s\n", file.Name())
-
-		// Выполняем SQL запрос миграции к базе данных
-		_, err = db.Exec(ctx, migration)
-		if err != nil {
-			return err
-		}
+	}(db)
+	if err := goose.UpContext(ctx, db, migrationsPath); err != nil {
+		panic(err)
 	}
 
-	fmt.Println("DB migrated")
+	log.Println("DB migrated")
 	return nil
 }

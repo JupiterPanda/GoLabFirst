@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package library.v1;
+
+option go_package = "goproject/protos/gen";
+
+import "google/protobuf/timestamp.proto";
+import "protos/proto/library.proto";   // <- путь от корня проекта, как у annotations.proto
+
+// Event — конверт сообщения Kafka.
+// Переиспользует те же request-сообщения, что и gRPC-сервис Library:
+// схема одна, дублирования полей нет.
+message Event {
+  string event_id = 1;                        // UUID, для дедупликации на стороне консьюмера
+  google.protobuf.Timestamp occurred_at = 2;  // когда событие произошло у producer'а
+
+  oneof payload {
+    // Rentals
+    RentOrReturnBookRequest rent_book   = 10;
+    RentOrReturnBookRequest return_book = 11;
+    BookInUseIdRequest create_book_in_use = 12;
+    BookInUseIdRequest delete_book_in_use = 13;
+
+    // Books
+    CreateBookRequest create_book  = 20;
+    BookIdRequest     delete_book  = 21;
+    BookIdRequest     add_copy     = 22;
+    BookIdRequest     minus_copy   = 23;
+    BookIdRequest     check_copies = 24;
+
+    // Readers
+    CreateReaderRequest create_reader         = 30;
+    ReaderIdRequest     delete_reader         = 31;
+    Reader              update_reader_contact = 32;
+  }
+}
