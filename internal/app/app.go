@@ -44,11 +44,11 @@ func Run() {
 		log.Fatalf("Migration failed: %v", err) // Завершаем, если миграции не применились
 	}
 
+	// Запускаем консюмер кафки на прослушивание топика
 	consumer, err := kafka.NewConsumer(ctx, kafka.Config{
-		Brokers:  strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
-		Topic:    os.Getenv("KAFKA_TOPIC"),
-		GroupID:  os.Getenv("KAFKA_GROUP_ID"),
-		DLQTopic: os.Getenv("KAFKA_DLQ_TOPIC"),
+		Brokers: strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
+		Topic:   os.Getenv("KAFKA_TOPIC"),
+		GroupID: os.Getenv("KAFKA_GROUP_ID"),
 	}, useCases)
 	if err != nil {
 		log.Fatalf("failed to init kafka consumer: %v", err)

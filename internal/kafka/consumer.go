@@ -2,143 +2,119 @@ package kafka
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"goproject/internal/delivery/libgrpc"
+	"goproject/internal/models"
 	"log"
 
 	"github.com/twmb/franz-go/pkg/kgo"
 )
 
-// Envelope — общий конверт сообщения.
-// Producer кладёт: {"action":"rent_book","payload":{...}}
-type Envelope struct {
-	Action  string          `json:"action"`
-	Payload json.RawMessage `json:"payload"`
-}
+// This example demonstrates runtime consumer control: dynamically adding and
+// removing topics/partitions, and pausing/resuming fetch operations.
+//
+// These APIs are useful for:
+//   - Dynamically discovering and consuming new topics
+//   - Implementing backpressure or priority-based consuming
+//   - Temporarily halting consumption from specific topics/partitions
 
 type Config struct {
-	Brokers  []string
-	Topic    string
-	GroupID  string
-	DLQTopic string // опционально: куда складывать необрабатываемые сообщения
+	Brokers []string
+	Topic   string
+	GroupID string
 }
 
-// Consumer читает события из Kafka и вызывает уже готовые методы UseCase.
-// Ни один gRPC-метод не переопределяется — используется тот же интерфейс libgrpc.UseCase,
-// который получает GRPCServer.
+func (c Config) validate() error {
+	if len(c.Brokers) == 0 || c.Brokers[0] == "" {
+		return errors.New("kafka: KAFKA_BROKERS is empty")
+	}
+	if c.Topic == "" {
+		return errors.New("kafka: KAFKA_TOPIC is empty")
+	}
+	if c.GroupID == "" {
+		return errors.New("kafka: KAFKA_GROUP_ID is empty (required for manual commits)")
+	}
+	return nil
+}
+
+// Consumer читает protobuf-события из Kafka и вызывает готовые методы UseCase.
 type Consumer struct {
-	cl       *kgo.Client
-	useCase  libgrpc.UseCase
-	dlqTopic string
+	client  *kgo.Client
+	useCase UseCase
 }
 
-func NewConsumer(ctx context.Context, cfg Config, useCase libgrpc.UseCase) (*Consumer, error) {
-	cl, err := kgo.NewClient(
+func NewConsumer(ctx context.Context, cfg Config, useCase UseCase) (*Consumer, error) {
+	if err := cfg.validate(); err != nil {
+		return nil, err
+	}
+
+	client, err := kgo.NewClient(
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.ConsumerGroup(cfg.GroupID),
 		kgo.ConsumeTopics(cfg.Topic),
-		kgo.ConsumeResetOffset(kgo.NewOffset().AtStart()), // новая группа читает топик с начала
-		kgo.DisableAutoCommit(),                           // коммитим вручную, только после успешной обработки
-		kgo.BlockRebalanceOnPoll(),                        // ребаланс не влезает в середину обработки батча
-		kgo.AllowAutoTopicCreation(),                      // удобно для DLQ в dev-окружении
+		kgo.ConsumeResetOffset(kgo.NewOffset().AtStart()),
+		kgo.DisableAutoCommit(),    // коммитим сами, после обработки
+		kgo.BlockRebalanceOnPoll(), // ребаланс не влезает в середину батча
+		kgo.AllowAutoTopicCreation(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("kafka: create client: %w", err)
 	}
 
-	if err := cl.Ping(ctx); err != nil { // сразу проверяем связность с кластером
-		cl.Close()
+	if err := client.Ping(ctx); err != nil {
+		client.Close()
 		return nil, fmt.Errorf("kafka: ping cluster: %w", err)
 	}
 
-	return &Consumer{cl: cl, useCase: useCase, dlqTopic: cfg.DLQTopic}, nil
+	return &Consumer{client: client, useCase: useCase}, nil
 }
 
-func (c *Consumer) Close() { c.cl.Close() }
-
-// Run — блокирующий цикл. Запускать в горутине, как HTTP gateway в main.go.
 func (c *Consumer) Run(ctx context.Context) error {
 	log.Println("Kafka consumer listening")
+	defer log.Println("Kafka consumer stopped")
 
 	for {
-		// PollRecords вместо PollFetches — при BlockRebalanceOnPoll ограничиваем
-		// размер батча, чтобы обработка не держала ребаланс слишком долго.
-		fetches := c.cl.PollRecords(ctx, 500)
-
-		if fetches.IsClientClosed() {
-			log.Println("Kafka consumer stopped: client closed")
-			return nil
-		}
-		if err := ctx.Err(); err != nil {
-			log.Println("Kafka consumer stopped: context done")
+		fetches := c.client.PollRecords(ctx, 500)
+		if fetches.IsClientClosed() || ctx.Err() != nil {
 			return nil
 		}
 
-		// Ошибки фетча логируем, но не падаем: retriable franz-go разруливает сам
 		fetches.EachError(func(topic string, partition int32, err error) {
 			if !errors.Is(err, context.Canceled) {
 				log.Printf("kafka: fetch error (topic=%s partition=%d): %v", topic, partition, err)
 			}
 		})
 
-		// Обрабатываем партиции по очереди — порядок внутри партиции сохраняется
 		fetches.EachPartition(func(p kgo.FetchTopicPartition) {
+			if len(p.Records) == 0 {
+				return
+			}
+
 			for _, rec := range p.Records {
 				if err := c.handle(ctx, rec); err != nil {
-					log.Printf("kafka: handling failed (topic=%s partition=%d offset=%d): %v",
-						rec.Topic, rec.Partition, rec.Offset, err)
-					c.toDLQ(ctx, rec, err)
+					// сообщение пропускаем: офсет всё равно коммитится ниже,
+					// иначе битое событие заблокировало бы всю партицию
+					log.Printf("kafka: handling failed (partition=%d offset=%d): %v",
+						rec.Partition, rec.Offset, err)
 				}
 			}
 
-			// Коммитим офсет партии после её обработки — и для успешных,
-			// и для отправленных в DLQ, чтобы одно битое сообщение не блокировало партицию.
-			if len(p.Records) > 0 {
-				if err := c.cl.CommitRecords(ctx, p.Records...); err != nil {
-					log.Printf("kafka: commit failed (topic=%s partition=%d offset=%d): %v",
-						p.Topic, p.Partition, p.Records[len(p.Records)-1].Offset+1, err)
-				}
+			if err := c.client.CommitRecords(ctx, p.Records...); err != nil {
+				log.Printf("kafka: commit failed (partition=%d): %v", p.Partition, err)
 			}
 		})
 
-		c.cl.AllowRebalance() // обязательно при BlockRebalanceOnPoll
+		c.client.AllowRebalance() // обязательно при BlockRebalanceOnPoll
 	}
 }
 
-func (c *Consumer) handle(ctx context.Context, rec *kgo.Record) error {
-	var env Envelope
-	if err := json.Unmarshal(rec.Value, &env); err != nil {
-		return fmt.Errorf("invalid envelope: %w", err)
-	}
+func (c *Consumer) Close() { c.client.Close() }
 
-	handler, ok := c.routes()[env.Action]
-	if !ok {
-		return fmt.Errorf("unknown action %q", env.Action)
-	}
-
-	return handler(ctx, env.Payload)
-}
-
-// toDLQ пишет необработанное сообщение в отдельный топик тем же клиентом
-func (c *Consumer) toDLQ(ctx context.Context, rec *kgo.Record, cause error) {
-	if c.dlqTopic == "" {
-		return
-	}
-
-	dead := &kgo.Record{
-		Topic: c.dlqTopic,
-		Key:   rec.Key,
-		Value: rec.Value,
-		Headers: []kgo.RecordHeader{
-			{Key: "error", Value: []byte(cause.Error())},
-			{Key: "origin-topic", Value: []byte(rec.Topic)},
-			{Key: "origin-offset", Value: []byte(fmt.Sprint(rec.Offset))},
-		},
-	}
-
-	if err := c.cl.ProduceSync(ctx, dead).FirstErr(); err != nil {
-		log.Printf("kafka: failed to write to DLQ: %v", err)
-	}
+type UseCase interface {
+	RentBookByTitleAndReaderName(ctx context.Context, name, title string) error
+	ReturnBookByTitleAndReaderName(ctx context.Context, name, title string) error
+	CreateBook(ctx context.Context, book models.Book) error
+	DeleteBook(ctx context.Context, id int) error
+	AddCopyOfBookById(ctx context.Context, id int) error
+	SubtractCopyOfBookById(ctx context.Context, id int) error
 }
