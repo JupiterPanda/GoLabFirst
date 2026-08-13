@@ -63,7 +63,6 @@ func (c *Consumer) handle(ctx context.Context, rec *kgo.Record) error {
 	}
 }
 
-// bookFromProto — если такой конвертер уже есть в libgrpc, вызывайте его вместо этого.
 func bookFromProto(b *gen.Book) (models.Book, error) {
 	if b == nil {
 		return models.Book{}, errors.New("book is nil")

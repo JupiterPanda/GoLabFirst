@@ -10,13 +10,7 @@ import (
 	"github.com/twmb/franz-go/pkg/kgo"
 )
 
-// This example demonstrates runtime consumer control: dynamically adding and
-// removing topics/partitions, and pausing/resuming fetch operations.
-//
-// These APIs are useful for:
-//   - Dynamically discovering and consuming new topics
-//   - Implementing backpressure or priority-based consuming
-//   - Temporarily halting consumption from specific topics/partitions
+// The example could be found in franz-go consumers examples of DLQ realization
 
 type Config struct {
 	Brokers []string
